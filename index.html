@@ -31,7 +31,10 @@
     <!-- Header -->
     <header class="w-full bg-white shadow-md p-4 sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center max-w-7xl">
-            <h1 class="text-2xl font-bold text-gray-800">My Awesome Store</h1>
+            <!-- Store name now acts as a button to go back to the products view -->
+            <button onclick="showView('products-view')" class="text-2xl font-bold text-gray-800 cursor-pointer hover:text-blue-600 transition-colors duration-200">
+                My Awesome Store
+            </button>
             <div class="flex items-center space-x-4">
                 <!-- User Profile/Login Button -->
                 <div id="auth-buttons" class="flex items-center space-x-2 hidden">
@@ -97,6 +100,15 @@
                         <label for="checkout-address" class="block text-gray-700 text-sm font-bold mb-2">Shipping Address:</label>
                         <textarea id="checkout-address" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                     </div>
+                    <!-- New fields for Country and State -->
+                    <div class="mb-4">
+                        <label for="checkout-country" class="block text-gray-700 text-sm font-bold mb-2">Country:</label>
+                        <input type="text" id="checkout-country" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="mb-4">
+                        <label for="checkout-state" class="block text-gray-700 text-sm font-bold mb-2">State/Region (optional):</label>
+                        <input type="text" id="checkout-state" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
                     <div class="text-right">
                         <button type="submit" id="submit-order-button" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-green-600 transition duration-300">
                             Place Order
@@ -126,6 +138,19 @@
                 </div>
                 <button id="checkout-button" class="w-full bg-green-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-green-600 transition duration-300 disabled:bg-gray-400" disabled>
                     Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Modal for showing full Order ID -->
+    <div id="message-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative">
+            <h3 class="text-xl font-bold mb-4 text-gray-800">Full Order ID</h3>
+            <p id="message-content" class="break-all text-gray-700"></p>
+            <div class="mt-6 text-right">
+                <button id="close-message-modal" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300">
+                    Close
                 </button>
             </div>
         </div>
@@ -200,6 +225,11 @@
         const viewOrdersLink = document.getElementById('view-orders-link');
         const signoutLink = document.getElementById('signout-link');
         const loginButton = document.getElementById('login-button');
+
+        // New UI elements for the message modal
+        const messageModal = document.getElementById('message-modal');
+        const messageContent = document.getElementById('message-content');
+        const closeMessageModal = document.getElementById('close-message-modal');
 
         // --- Discord Webhook Configuration ---
         // Replace with your own Discord webhook URL if you want order notifications
@@ -318,7 +348,7 @@
         function openCheckoutModal() {
             if (cart.length === 0) {
                 // Using a custom modal/message box instead of alert()
-                console.error('Your cart is empty.');
+                showMessageModal('Your cart is empty.');
                 return;
             }
             closeCartModal();
@@ -330,22 +360,35 @@
             checkoutModal.classList.add('hidden');
         }
 
+        // Shows a custom message modal
+        function showMessageModal(message) {
+            messageContent.textContent = message;
+            messageModal.classList.remove('hidden');
+        }
+
+        // Closes the custom message modal
+        window.closeMessageModal = function() {
+            messageModal.classList.add('hidden');
+        }
+
         // Main checkout function: saves order to Firestore and sends webhook
         async function placeOrder(event) {
             event.preventDefault();
 
             if (!userId) {
-                console.error('Please sign in to place an order.');
+                showMessageModal('Please sign in to place an order.');
                 return;
             }
 
             const name = document.getElementById('checkout-name').value;
             const email = document.getElementById('checkout-email').value;
             const address = document.getElementById('checkout-address').value;
+            const country = document.getElementById('checkout-country').value;
+            const state = document.getElementById('checkout-state').value;
 
             // Simple validation
-            if (!name || !email || !address) {
-                console.error('Please fill out all fields.');
+            if (!name || !email || !address || !country) {
+                showMessageModal('Please fill out all required fields.');
                 return;
             }
 
@@ -359,6 +402,8 @@
                 name: name,
                 email: email,
                 address: address,
+                country: country,
+                state: state,
                 status: 'Processing',
                 timestamp: serverTimestamp()
             });
@@ -370,7 +415,7 @@
             ).join('\n');
 
             const discordPayload = {
-                content: `**New Order from ${name} (ID: ${orderId})**\n\n**Order Details:**\nEmail: ${email}\nShipping Address: ${address}\n\n**Items:**\n${messageContent}\n\n**Total:** $${total.toFixed(2)}`,
+                content: `**New Order from ${name} (ID: ${orderId})**\n\n**Customer Details:**\nEmail: ${email}\nShipping Address: ${address}, ${state}, ${country}\n\n**Items:**\n${messageContent}\n\n**Total:** $${total.toFixed(2)}`,
                 username: "Store Checkout Bot",
                 avatar_url: "https://placehold.co/48x48/60a5fa/ffffff?text=🛒"
             };
@@ -419,7 +464,10 @@
                     orderEl.className = 'bg-white rounded-lg shadow-md p-4';
                     orderEl.innerHTML = `
                         <div class="flex justify-between items-center mb-2">
-                            <h4 class="text-xl font-bold text-gray-800">Order ID: ${order.id.slice(0, 8)}...</h4>
+                            <!-- The order ID is now a clickable link to show the full ID -->
+                            <button onclick="showMessageModal('Full Order ID: ${order.id}')" class="text-xl font-bold text-gray-800 cursor-pointer hover:underline">
+                                Order ID: ${order.id.slice(0, 8)}...
+                            </button>
                             <span class="font-bold text-green-600">$${orderTotal}</span>
                         </div>
                         <p class="text-sm text-gray-500 mb-2">Order placed on: ${orderDate}</p>
@@ -514,6 +562,7 @@
             userProfileButton.addEventListener('click', () => {
                 profileDropdown.classList.toggle('hidden');
             });
+            closeMessageModal.addEventListener('click', closeMessageModal);
 
             // Show products view by default
             showView('products-view');
