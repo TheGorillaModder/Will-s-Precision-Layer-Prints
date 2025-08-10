@@ -254,104 +254,56 @@
                 </div>
             </div>
         </div>
-
-        <!-- Message/Loading Modal -->
-        <div id="message-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg">
-            <div class="bg-white rounded-xl shadow-2xl p-6 relative flex flex-col items-center max-w-sm">
-                <button id="close-message-modal" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-                <div id="message-content">
-                    <div id="loading-spinner" class="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-red-500 mx-auto"></div>
-                    <p id="message-text" class="mt-4 text-lg font-semibold text-gray-700 text-center">Loading...</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Add to Cart Success Modal -->
-        <div id="add-to-cart-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg">
-            <div class="bg-white rounded-xl shadow-2xl p-6 relative flex flex-col items-center max-w-sm">
-                <div class="text-green-500 mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <p class="text-xl font-semibold text-gray-700 text-center">Item added to cart!</p>
-                <button id="acknowledge-button" class="mt-4 bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition duration-300">OK</button>
-            </div>
-        </div>
-
-        <!-- Admin Order Details Modal -->
-        <div id="admin-order-details-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg">
-            <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 relative">
-                <h2 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Order Details</h2>
-                <button id="close-admin-order-details-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-                <div id="admin-order-details-content">
-                    <!-- Order details will be dynamically inserted here -->
-                </div>
-            </div>
-        </div>
-        
     </div>
 
-    <!-- Firebase SDKs -->
+    <!-- Message/Alert Modal (instead of window.alert) -->
+    <div id="message-box" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 modal-bg">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative text-center">
+            <h3 class="text-2xl font-bold mb-4">Message</h3>
+            <p id="message-box-content" class="text-gray-700 mb-6"></p>
+            <button id="message-box-ok-btn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition duration-300">OK</button>
+        </div>
+    </div>
+
+    <!-- Loading Spinner Overlay -->
+    <div id="loading-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-bg">
+        <svg class="animate-spin -ml-1 mr-3 h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+    </div>
+
     <script type="module">
+        // Import Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, addDoc, onSnapshot, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, addDoc, collection, onSnapshot, serverTimestamp, query, where, getDocs, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Your provided Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZHcWkwB2bff5beuh1J50NI-9WeYvhcIg",
+            authDomain: "will-s-precision-layer-prints.firebaseapp.com",
+            projectId: "will-s-precision-layer-prints",
+            storageBucket: "will-s-precision-layer-prints.firebasestorage.app",
+            messagingSenderId: "28322806740",
+            appId: "1:28322806740:web:643d6bd0d857d936f77441",
+            measurementId: "G-P96D22GYV5"
+        };
         
-        // This is the Firebase configuration.
-        // The canvas environment should automatically provide this via the `__firebase_config` global variable.
-        // If you are running this code locally, you will need to replace the empty object with your own Firebase project config.
-        let firebaseConfig = {};
-        try {
-            // Attempt to use the provided environment variable
-            firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        } catch (e) {
-            console.error("Failed to parse firebase config:", e);
-        }
-        
-        // Fallback for when no config is provided
-        if (Object.keys(firebaseConfig).length === 0) {
-            console.error("Firebase configuration is empty or not provided. The app will not function correctly.");
-        }
-        
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
-        
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-
-        let productsCollection;
-        let ordersCollection;
-
-        // User authentication and UI state management
+        // Global state
+        let currentUserId = null;
         let isAdmin = false;
-        let userId = null;
 
-        const authButtons = document.getElementById('auth-buttons');
-        const userProfileMenu = document.getElementById('user-profile-menu');
-        const loginButton = document.getElementById('login-button');
-        const userProfileButton = document.getElementById('user-profile-button');
-        const userAvatar = document.getElementById('user-avatar');
-        const userName = document.getElementById('user-name');
-        const profileDropdown = document.getElementById('profile-dropdown');
-        const signoutLink = document.getElementById('signout-link');
-        const viewOrdersLink = document.getElementById('view-orders-link');
-        const adminButton = document.getElementById('admin-button');
-
+        // DOM Elements
         const productsView = document.getElementById('products-view');
-        const productsList = document.getElementById('product-list');
         const productSearchInput = document.getElementById('product-search');
+        const productListDiv = document.getElementById('product-list');
         const noProductsFoundMessage = document.getElementById('no-products-found');
         const productsLoading = document.getElementById('products-loading');
 
@@ -361,728 +313,542 @@
         const cartButton = document.getElementById('cart-button');
         const cartBadge = document.getElementById('cart-badge');
         const cartModal = document.getElementById('cart-modal');
-        const cartItemsContainer = document.getElementById('cart-items');
+        const closeModalButton = document.getElementById('close-modal-button');
+        const cartItemsDiv = document.getElementById('cart-items');
         const cartTotalSpan = document.getElementById('cart-total');
-        const checkoutButton = document.getElementById('checkout-button');
         const cartEmptyMessage = document.getElementById('cart-empty-message');
+        const checkoutButton = document.getElementById('checkout-button');
 
         const checkoutModal = document.getElementById('checkout-modal');
+        const closeCheckoutModalBtn = document.getElementById('close-checkout-modal');
         const checkoutForm = document.getElementById('checkout-form');
-        const checkoutNameInput = document.getElementById('checkout-name');
-        const checkoutEmailInput = document.getElementById('checkout-email');
-        const checkoutAddressInput = document.getElementById('checkout-address');
-        const checkoutCityInput = document.getElementById('checkout-city');
-        const checkoutCountryInput = document.getElementById('checkout-country');
-        const checkoutStateInput = document.getElementById('checkout-state');
+        const checkoutName = document.getElementById('checkout-name');
+        const checkoutEmail = document.getElementById('checkout-email');
+        const checkoutAddress = document.getElementById('checkout-address');
+        const checkoutCity = document.getElementById('checkout-city');
+        const checkoutCountry = document.getElementById('checkout-country');
+        const checkoutState = document.getElementById('checkout-state');
 
-        const messageModal = document.getElementById('message-modal');
-        const messageText = document.getElementById('message-text');
-        const loadingSpinner = document.getElementById('loading-spinner');
-        const closeMessageModal = document.getElementById('close-message-modal');
-        
-        const addToCartModal = document.getElementById('add-to-cart-modal');
-        const acknowledgeButton = document.getElementById('acknowledge-button');
+        const authButtonsDiv = document.getElementById('auth-buttons');
+        const loginButton = document.getElementById('login-button');
+        const userProfileMenu = document.getElementById('user-profile-menu');
+        const userProfileButton = document.getElementById('user-profile-button');
+        const userAvatar = document.getElementById('user-avatar');
+        const userNameSpan = document.getElementById('user-name');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        const signoutLink = document.getElementById('signout-link');
+        const viewOrdersLink = document.getElementById('view-orders-link');
 
         const ordersView = document.getElementById('orders-view');
-        const ordersList = document.getElementById('orders-list');
+        const ordersListDiv = document.getElementById('orders-list');
         const emptyOrdersMessage = document.getElementById('empty-orders-message');
 
+        const adminButton = document.getElementById('admin-button');
         const adminView = document.getElementById('admin-view');
-        const addProductForm = document.getElementById('add-product-form');
         const toggleAddProductBtn = document.getElementById('toggle-add-product-btn');
         const addProductContent = document.getElementById('add-product-content');
         const addProductArrow = document.getElementById('add-product-arrow');
+        const addProductForm = document.getElementById('add-product-form');
+        const productNameInput = document.getElementById('product-name');
+        const productDescriptionInput = document.getElementById('product-description');
+        const productImageInput = document.getElementById('product-image');
+        const productColorsInput = document.getElementById('product-colors');
+        const productSizesInput = document.getElementById('product-sizes');
+        const productPricesInput = document.getElementById('product-prices');
+
         const toggleAllOrdersBtn = document.getElementById('toggle-all-orders-btn');
         const allOrdersContent = document.getElementById('all-orders-content');
         const allOrdersArrow = document.getElementById('all-orders-arrow');
-        const allOrdersList = document.getElementById('all-orders-list');
         const orderSearchInput = document.getElementById('order-search');
-        
-        const adminOrderDetailsModal = document.getElementById('admin-order-details-modal');
-        const closeAdminOrderDetailsModalBtn = document.getElementById('close-admin-order-details-modal');
-        const adminOrderDetailsContent = document.getElementById('admin-order-details-content');
-        const orderDismissButton = document.getElementById('dismiss-order-button');
+        const allOrdersListDiv = document.getElementById('all-orders-list');
 
-        let cart = {};
+        const messageBox = document.getElementById('message-box');
+        const messageBoxContent = document.getElementById('message-box-content');
+        const messageBoxOkBtn = document.getElementById('message-box-ok-btn');
+        const loadingOverlay = document.getElementById('loading-overlay');
 
-        // Helper functions
-        window.showView = function(viewId) {
+        // Functions
+        window.showAlert = (message) => {
+            messageBoxContent.textContent = message;
+            messageBox.classList.remove('hidden');
+        };
+
+        window.hideAlert = () => {
+            messageBox.classList.add('hidden');
+        };
+
+        window.showLoading = () => {
+            loadingOverlay.classList.remove('hidden');
+        };
+
+        window.hideLoading = () => {
+            loadingOverlay.classList.add('hidden');
+        };
+
+        window.showView = (viewId) => {
             const views = [productsView, productDetailView, ordersView, adminView];
             views.forEach(view => {
                 view.classList.add('hidden');
+                if (view.id === viewId) {
+                    view.classList.remove('hidden');
+                }
             });
-            document.getElementById(viewId).classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
+        };
 
-        function showMessageModal(text, isSpinning = false, dismissible = true) {
-            messageText.textContent = text;
-            loadingSpinner.classList.toggle('hidden', !isSpinning);
-            closeMessageModal.classList.toggle('hidden', !dismissible);
-            messageModal.classList.remove('hidden');
-        }
+        const toggleAccordion = (content, arrow) => {
+            content.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+        };
 
-        window.closeMessageModal = function() {
-            messageModal.classList.add('hidden');
-        }
+        const updateCartDisplay = () => {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartBadge.textContent = totalItems;
+            if (totalItems > 0) {
+                cartBadge.classList.remove('opacity-0');
+                cartBadge.classList.add('opacity-100');
+            } else {
+                cartBadge.classList.remove('opacity-100');
+                cartBadge.classList.add('opacity-0');
+            }
+        };
 
-        function openCartModal() {
-            cartModal.classList.remove('hidden');
-        }
-
-        function closeCartModal() {
-            cartModal.classList.add('hidden');
-        }
-
-        function openCheckoutModal() {
-            closeCartModal();
-            checkoutModal.classList.remove('hidden');
-        }
-
-        function closeCheckoutModal() {
-            checkoutModal.classList.add('hidden');
-        }
-        
-        window.closeAddToCartModal = function() {
-            addToCartModal.classList.add('hidden');
-        }
-        
-        function closeAdminOrderDetailsModal() {
-            adminOrderDetailsModal.classList.add('hidden');
-        }
-
-        function updateCartUI() {
-            cartItemsContainer.innerHTML = '';
+        const renderCartModal = () => {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cartItemsDiv.innerHTML = '';
             let total = 0;
-            let totalItems = 0;
-            const items = Object.values(cart);
-            if (items.length === 0) {
+
+            if (cart.length === 0) {
                 cartEmptyMessage.classList.remove('hidden');
                 checkoutButton.disabled = true;
+                checkoutButton.classList.add('bg-red-300', 'cursor-not-allowed');
+                checkoutButton.classList.remove('bg-red-600', 'hover:bg-red-700');
             } else {
                 cartEmptyMessage.classList.add('hidden');
                 checkoutButton.disabled = false;
-                items.forEach(item => {
+                checkoutButton.classList.remove('bg-red-300', 'cursor-not-allowed');
+                checkoutButton.classList.add('bg-red-600', 'hover:bg-red-700');
+
+                cart.forEach(item => {
                     const itemTotal = item.price * item.quantity;
                     total += itemTotal;
-                    totalItems += item.quantity;
-                    const cartItemDiv = document.createElement('div');
-                    cartItemDiv.className = 'flex justify-between items-center bg-gray-100 p-3 rounded-lg';
-                    cartItemDiv.innerHTML = `
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'flex items-center justify-between p-4 bg-gray-100 rounded-lg shadow-sm';
+                    itemElement.innerHTML = `
                         <div class="flex items-center space-x-4">
-                            <img src="${item.image}" alt="${item.name}" class="w-16 h-16 rounded-md">
+                            <img src="${item.imageUrl}" alt="${item.name}" class="w-16 h-16 rounded-lg object-cover">
                             <div>
-                                <h3 class="font-semibold text-gray-800">${item.name}</h3>
-                                <p class="text-sm text-gray-600">${item.size} - ${item.color}</p>
-                                <p class="text-sm text-gray-500">$${item.price.toFixed(2)} each</p>
+                                <h4 class="font-bold text-lg">${item.name}</h4>
+                                <p class="text-sm text-gray-600">Price: $${item.price.toFixed(2)}</p>
+                                <p class="text-sm text-gray-600">Color: ${item.color}</p>
+                                <p class="text-sm text-gray-600">Size: ${item.size}</p>
                             </div>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <button class="cart-remove-one text-red-500 hover:text-red-700 font-bold text-lg leading-none" data-id="${item.id}" data-size="${item.size}" data-color="${item.color}">&minus;</button>
-                            <span class="font-bold text-gray-800">${item.quantity}</span>
-                            <button class="cart-add-one text-green-500 hover:text-green-700 font-bold text-lg leading-none" data-id="${item.id}" data-size="${item.size}" data-color="${item.color}">&plus;</button>
-                            <button class="cart-remove-all text-red-500 hover:text-red-700 text-sm ml-2" data-id="${item.id}" data-size="${item.size}" data-color="${item.color}">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex items-center space-x-4">
+                            <span class="font-bold text-xl">$${itemTotal.toFixed(2)}</span>
+                            <div class="flex items-center space-x-2">
+                                <button class="update-quantity-btn bg-gray-300 p-1 rounded-full text-lg" data-id="${item.id}" data-action="decrease">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="update-quantity-btn bg-gray-300 p-1 rounded-full text-lg" data-id="${item.id}" data-action="increase">+</button>
+                            </div>
+                            <button class="remove-from-cart-btn text-red-500 hover:text-red-700 transition duration-300" data-id="${item.id}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
                             </button>
                         </div>
                     `;
-                    cartItemsContainer.appendChild(cartItemDiv);
+                    cartItemsDiv.appendChild(itemElement);
                 });
             }
 
             cartTotalSpan.textContent = `$${total.toFixed(2)}`;
-            cartBadge.textContent = totalItems;
-            cartBadge.classList.toggle('opacity-0', totalItems === 0);
-        }
+            updateCartDisplay();
+        };
 
-        function addToCart(product, quantity = 1) {
-            const key = `${product.id}-${product.size}-${product.color}`;
-            if (cart[key]) {
-                cart[key].quantity += quantity;
-            } else {
-                cart[key] = {
-                    id: product.id,
-                    name: product.name,
-                    image: product.image,
-                    size: product.size,
-                    color: product.color,
-                    price: product.price,
-                    quantity: quantity
-                };
-            }
-            updateCartUI();
-            addToCartModal.classList.remove('hidden');
-        }
-
-        function handleCartAction(event) {
-            const target = event.target.closest('button');
-            if (!target) return;
-
-            const id = target.dataset.id;
-            const size = target.dataset.size;
-            const color = target.dataset.color;
-            const key = `${id}-${size}-${color}`;
-
-            if (target.classList.contains('cart-remove-one')) {
-                if (cart[key].quantity > 1) {
-                    cart[key].quantity -= 1;
-                } else {
-                    delete cart[key];
-                }
-            } else if (target.classList.contains('cart-add-one')) {
-                cart[key].quantity += 1;
-            } else if (target.classList.contains('cart-remove-all')) {
-                delete cart[key];
-            }
-            updateCartUI();
-        }
-        
-        function toggleAccordion(contentId, arrowId) {
-            const content = document.getElementById(contentId);
-            const arrow = document.getElementById(arrowId);
-            const isHidden = content.classList.contains('hidden');
-            content.classList.toggle('hidden', !isHidden);
-            arrow.classList.toggle('rotate-0', isHidden);
-            arrow.classList.toggle('rotate-180', !isHidden);
-        }
-
-        async function fetchProducts() {
-            productsLoading.classList.remove('hidden');
-            productsList.innerHTML = '';
-            try {
-                const q = query(productsCollection);
-                const querySnapshot = await getDocs(q);
-                const products = [];
-                querySnapshot.forEach((doc) => {
-                    products.push({ id: doc.id, ...doc.data() });
-                });
-                renderProducts(products);
-            } catch (error) {
-                console.error("Error fetching products:", error);
-                showMessageModal("Failed to load products. Please try again later.", false, true);
-            } finally {
-                productsLoading.classList.add('hidden');
-            }
-        }
-
-        function renderProducts(products) {
-            productsList.innerHTML = '';
+        const renderProducts = (products) => {
+            productListDiv.innerHTML = '';
             if (products.length === 0) {
                 noProductsFoundMessage.classList.remove('hidden');
                 return;
-            } else {
-                noProductsFoundMessage.classList.add('hidden');
             }
+            noProductsFoundMessage.classList.add('hidden');
+
             products.forEach(product => {
                 const productCard = document.createElement('div');
-                productCard.className = 'bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden cursor-pointer product-card';
-                productCard.dataset.name = product.name;
-                productCard.onclick = () => renderProductDetail(product);
-                
-                const firstPrice = Object.values(product.prices)[0] || 0;
-
+                productCard.className = 'bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer';
+                productCard.onclick = () => showProductDetail(product);
                 productCard.innerHTML = `
-                    <div class="relative w-full h-48 overflow-hidden bg-gray-200">
-                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" onerror="this.src='https://placehold.co/400x300/e5e7eb/4b5563?text=Image+Not+Found';">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-800">${product.name}</h3>
-                        <p class="mt-2 text-red-600 font-bold text-lg">$${firstPrice.toFixed(2)}</p>
+                    <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-1">${product.name}</h3>
+                        <p class="text-gray-600 text-sm">${product.description.substring(0, 70)}...</p>
+                        <p class="mt-2 text-xl font-bold text-gray-900">$${Object.values(product.prices)[0].toFixed(2)}</p>
                     </div>
                 `;
-                productsList.appendChild(productCard);
+                productListDiv.appendChild(productCard);
             });
-        }
+        };
 
-        function renderProductDetail(product) {
+        const showProductDetail = (product) => {
             productDetailContent.innerHTML = `
-                <div class="flex-shrink-0 w-full md:w-1/2">
-                    <img src="${product.image}" alt="${product.name}" class="w-full h-auto rounded-lg shadow-md" onerror="this.src='https://placehold.co/600x600/e5e7eb/4b5563?text=Image+Not+Found';">
-                </div>
-                <div class="flex-grow md:w-1/2">
-                    <h2 class="text-4xl font-extrabold text-gray-800 mb-2">${product.name}</h2>
-                    <p class="text-gray-600 mb-6">${product.description}</p>
+                <img src="${product.imageUrl}" alt="${product.name}" class="w-full md:w-1/2 h-64 md:h-auto object-cover rounded-lg shadow-lg">
+                <div class="flex-1">
+                    <h2 class="text-4xl font-bold text-gray-800 mb-2">${product.name}</h2>
+                    <p class="text-gray-600 mb-4">${product.description}</p>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <span class="text-2xl font-bold text-red-500">$${Object.values(product.prices)[0].toFixed(2)}</span>
+                    </div>
+
                     <div class="mb-4">
-                        <span class="text-sm font-semibold text-gray-700">Colors:</span>
-                        <div id="product-colors" class="flex flex-wrap gap-2 mt-2">
-                            ${product.colors.map(color => `<span class="inline-block px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-800 cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-200" data-color="${color}">${color}</span>`).join('')}
+                        <label class="block text-gray-700 font-semibold mb-2">Color</label>
+                        <div id="color-options" class="flex space-x-2">
+                            ${product.colors.map(color => `
+                                <button class="color-option p-3 rounded-full border-2 border-gray-300 hover:border-red-500 transition-colors duration-200" data-color="${color}" style="background-color: ${color};"></button>
+                            `).join('')}
                         </div>
                     </div>
+
                     <div class="mb-6">
-                        <span class="text-sm font-semibold text-gray-700">Sizes:</span>
-                        <div id="product-sizes" class="flex flex-wrap gap-2 mt-2">
-                            ${product.sizes.map(size => `<span class="inline-block px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-800 cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-200" data-size="${size}">${size}</span>`).join('')}
+                        <label class="block text-gray-700 font-semibold mb-2">Size</label>
+                        <div id="size-options" class="flex space-x-2">
+                            ${product.sizes.map(size => `
+                                <button class="size-option px-4 py-2 rounded-lg border-2 border-gray-300 hover:border-red-500 hover:text-red-500 transition-colors duration-200" data-size="${size}">${size}</button>
+                            `).join('')}
                         </div>
                     </div>
-                    <div class="mb-6">
-                        <span class="text-sm font-semibold text-gray-700">Price:</span>
-                        <div id="product-price" class="text-3xl font-bold text-red-600 mt-2">$${Object.values(product.prices)[0].toFixed(2)}</div>
-                    </div>
+
                     <button id="add-to-cart-btn" class="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-red-700 transition duration-300">
                         Add to Cart
                     </button>
-                    <div id="options-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 modal-bg">
-                        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative">
-                            <h3 class="text-xl font-bold mb-4">Select options</h3>
-                            <p>Please select a color and size before adding to cart.</p>
-                            <button id="close-options-modal" class="mt-4 bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700">Close</button>
-                        </div>
-                    </div>
                 </div>
             `;
-            const colorSpans = productDetailContent.querySelectorAll('#product-colors span');
-            const sizeSpans = productDetailContent.querySelectorAll('#product-sizes span');
-            const priceDisplay = document.getElementById('product-price');
-            const optionsModal = document.getElementById('options-modal');
-            const closeOptionsModal = document.getElementById('close-options-modal');
-
-            let selectedColor = null;
-            let selectedSize = null;
-
-            function updatePrice() {
-                if (selectedSize && product.prices[selectedSize]) {
-                    priceDisplay.textContent = `$${product.prices[selectedSize].toFixed(2)}`;
-                } else {
-                    priceDisplay.textContent = `$${Object.values(product.prices)[0].toFixed(2)}`;
-                }
-            }
-
-            colorSpans.forEach(span => {
-                span.addEventListener('click', () => {
-                    colorSpans.forEach(s => s.classList.remove('bg-red-500', 'text-white'));
-                    span.classList.add('bg-red-500', 'text-white');
-                    selectedColor = span.dataset.color;
-                });
-            });
-
-            sizeSpans.forEach(span => {
-                span.addEventListener('click', () => {
-                    sizeSpans.forEach(s => s.classList.remove('bg-red-500', 'text-white'));
-                    span.classList.add('bg-red-500', 'text-white');
-                    selectedSize = span.dataset.size;
-                    updatePrice();
-                });
-            });
-            
-            closeOptionsModal.addEventListener('click', () => {
-                optionsModal.classList.add('hidden');
-            });
-
-            document.getElementById('add-to-cart-btn').addEventListener('click', () => {
-                if (selectedColor && selectedSize) {
-                    const productToAdd = {
-                        id: product.id,
-                        name: product.name,
-                        image: product.image,
-                        price: product.prices[selectedSize],
-                        color: selectedColor,
-                        size: selectedSize
-                    };
-                    addToCart(productToAdd);
-                } else {
-                    optionsModal.classList.remove('hidden');
-                }
-            });
-
             window.showView('product-detail-view');
-        }
+        };
 
-        async function placeOrder(event) {
+        const addProduct = async (event) => {
             event.preventDefault();
-            showMessageModal("Placing your order...", true, false);
+            window.showLoading();
 
-            if (Object.keys(cart).length === 0) {
-                showMessageModal("Your cart is empty!", false, true);
-                return;
-            }
-
-            const customerName = checkoutNameInput.value;
-            const customerEmail = checkoutEmailInput.value;
-            const shippingAddress = checkoutAddressInput.value;
-            const city = checkoutCityInput.value;
-            const country = checkoutCountryInput.value;
-            const state = checkoutStateInput.value;
-            const orderId = `ORDER-${Date.now()}`;
-            const total = parseFloat(cartTotalSpan.textContent.replace('$', ''));
-
-            const order = {
-                orderId: orderId,
-                userId: userId,
-                timestamp: serverTimestamp(),
-                customerName,
-                customerEmail,
-                shippingAddress,
-                city,
-                country,
-                state,
-                items: Object.values(cart),
-                total,
-                status: 'Processing'
-            };
+            const name = productNameInput.value;
+            const description = productDescriptionInput.value;
+            const imageUrl = productImageInput.value;
+            const colors = productColorsInput.value.split(',').map(c => c.trim());
+            const sizes = productSizesInput.value.split(',').map(s => s.trim());
+            const prices = JSON.parse(productPricesInput.value);
 
             try {
-                await addDoc(ordersCollection, order);
-                cart = {};
-                updateCartUI();
-                closeCheckoutModal();
-                showMessageModal("Order placed successfully! Your order number is " + orderId, false, true);
-                
-                // Clear the form
-                checkoutForm.reset();
-            } catch (error) {
-                console.error("Error placing order:", error);
-                showMessageModal("Failed to place order. Please try again.", false, true);
-            }
-        }
-
-        async function fetchMyOrders() {
-            if (!userId) {
-                console.log("No user signed in.");
-                ordersList.innerHTML = `<p class="text-gray-500 text-center py-4">You must be signed in to view your orders.</p>`;
-                return;
-            }
-
-            ordersList.innerHTML = `<div class="flex justify-center items-center py-12"><svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="text-xl font-semibold text-gray-800">Loading orders...</span></div>`;
-            const q = query(ordersCollection, where("userId", "==", userId));
-            const unsubscribe = onSnapshot(q, (querySnapshot) => {
-                const orders = [];
-                querySnapshot.forEach((doc) => {
-                    orders.push({ id: doc.id, ...doc.data() });
+                const productsCollectionRef = collection(db, `artifacts/${firebaseConfig.projectId}/products`);
+                await addDoc(productsCollectionRef, {
+                    name,
+                    description,
+                    imageUrl,
+                    colors,
+                    sizes,
+                    prices,
+                    createdAt: serverTimestamp()
                 });
-                renderMyOrders(orders);
-            });
-            return unsubscribe;
-        }
+                window.showAlert('Product added successfully!');
+                addProductForm.reset();
+            } catch (e) {
+                console.error("Error adding product: ", e);
+                window.showAlert('Failed to add product. Check the console for details.');
+            } finally {
+                window.hideLoading();
+            }
+        };
 
-        function renderMyOrders(orders) {
-            ordersList.innerHTML = '';
+        const renderOrders = (orders) => {
+            ordersListDiv.innerHTML = '';
             if (orders.length === 0) {
                 emptyOrdersMessage.classList.remove('hidden');
                 return;
-            } else {
-                emptyOrdersMessage.classList.add('hidden');
             }
-            orders.sort((a, b) => b.timestamp - a.timestamp); // Sort by newest first
-            orders.forEach(order => {
-                const orderDate = order.timestamp ? new Date(order.timestamp.toDate()).toLocaleString() : 'N/A';
-                const orderDiv = document.createElement('div');
-                orderDiv.className = 'bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500';
-                orderDiv.innerHTML = `
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-bold text-gray-800">Order #${order.orderId}</h3>
-                        <span class="text-sm font-semibold text-red-500 bg-red-100 px-3 py-1 rounded-full">${order.status}</span>
-                    </div>
-                    <p class="text-sm text-gray-500 mb-2">Placed on: ${orderDate}</p>
-                    <p class="text-sm text-gray-500 mb-4">Total: <span class="font-bold text-gray-800">$${order.total.toFixed(2)}</span></p>
-                    <div class="space-y-2">
-                        <h4 class="font-bold text-gray-700">Items:</h4>
-                        ${order.items.map(item => `
-                            <div class="flex items-center space-x-4">
-                                <img src="${item.image}" alt="${item.name}" class="w-12 h-12 rounded-md">
-                                <div>
-                                    <p class="text-sm text-gray-800">${item.name} (${item.size}, ${item.color})</p>
-                                    <p class="text-xs text-gray-500">Qty: ${item.quantity} @ $${item.price.toFixed(2)}</p>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                ordersList.appendChild(orderDiv);
-            });
-        }
-        
-        async function fetchAllOrders() {
-            allOrdersList.innerHTML = `<div class="flex justify-center items-center py-12"><svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="text-xl font-semibold text-gray-800">Loading all orders...</span></div>`;
-            const q = query(ordersCollection);
-            const unsubscribe = onSnapshot(q, (querySnapshot) => {
-                const orders = [];
-                querySnapshot.forEach((doc) => {
-                    orders.push({ id: doc.id, ...doc.data() });
-                });
-                renderAllOrders(orders);
-            });
-            return unsubscribe;
-        }
+            emptyOrdersMessage.classList.add('hidden');
 
-        function renderAllOrders(orders) {
-            allOrdersList.innerHTML = '';
+            orders.forEach(order => {
+                const orderElement = document.createElement('div');
+                orderElement.className = 'bg-white rounded-lg shadow-md p-6';
+                orderElement.innerHTML = `
+                    <div class="flex justify-between items-center border-b pb-4 mb-4">
+                        <div>
+                            <h4 class="font-bold text-xl">Order #${order.id.substring(0, 8)}</h4>
+                            <p class="text-sm text-gray-500">${order.createdAt.toDate().toLocaleString()}</p>
+                        </div>
+                        <span class="text-red-500 font-bold text-lg">$${order.total.toFixed(2)}</span>
+                    </div>
+                    <ul class="space-y-2">
+                        ${order.items.map(item => `
+                            <li class="flex items-center space-x-4">
+                                <img src="${item.imageUrl}" alt="${item.name}" class="w-12 h-12 rounded-lg object-cover">
+                                <div>
+                                    <p class="font-semibold">${item.name} x${item.quantity}</p>
+                                    <p class="text-sm text-gray-500">Color: ${item.color}, Size: ${item.size}</p>
+                                </div>
+                            </li>
+                        `).join('')}
+                    </ul>
+                `;
+                ordersListDiv.appendChild(orderElement);
+            });
+        };
+        
+        const renderAdminOrders = (orders) => {
+            allOrdersListDiv.innerHTML = '';
+            if (orders.length === 0) {
+                const p = document.createElement('p');
+                p.className = 'text-gray-500 text-center py-4';
+                p.textContent = 'No orders yet.';
+                allOrdersListDiv.appendChild(p);
+                return;
+            }
+            
             const searchTerm = orderSearchInput.value.toLowerCase();
             const filteredOrders = orders.filter(order =>
                 order.customerName.toLowerCase().includes(searchTerm) ||
-                order.orderId.toLowerCase().includes(searchTerm)
+                order.id.toLowerCase().includes(searchTerm)
             );
 
             if (filteredOrders.length === 0) {
-                allOrdersList.innerHTML = `<p class="text-gray-500 text-center py-4">No orders found.</p>`;
-                return;
-            }
-
-            filteredOrders.sort((a, b) => b.timestamp - a.timestamp);
-            
-            filteredOrders.forEach(order => {
-                const orderDate = order.timestamp ? new Date(order.timestamp.toDate()).toLocaleString() : 'N/A';
-                const orderDiv = document.createElement('div');
-                orderDiv.className = 'bg-gray-100 rounded-lg shadow p-4 mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center';
-                orderDiv.innerHTML = `
-                    <div>
-                        <h4 class="font-bold text-lg">Order ID: <span class="font-normal">${order.orderId}</span></h4>
-                        <p class="text-sm text-gray-600">Customer: ${order.customerName}</p>
-                        <p class="text-sm text-gray-600">Total: $${order.total.toFixed(2)}</p>
-                        <p class="text-sm text-gray-600">Placed: ${orderDate}</p>
-                    </div>
-                    <div class="mt-4 sm:mt-0 flex items-center space-x-2">
-                        <select class="order-status-dropdown bg-white border border-gray-300 rounded-md p-2" data-order-id="${order.id}">
-                            <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
-                            <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
-                            <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                        </select>
-                        <button class="view-order-details-btn bg-blue-500 text-white text-sm px-3 py-2 rounded-md hover:bg-blue-600" data-order-id="${order.id}">View Details</button>
-                    </div>
-                `;
-                allOrdersList.appendChild(orderDiv);
-            });
-            
-            allOrdersList.querySelectorAll('.view-order-details-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const orderId = e.target.dataset.orderId;
-                    const order = orders.find(o => o.id === orderId);
-                    if (order) {
-                        renderAdminOrderDetailsModal(order);
-                    }
-                });
-            });
-
-            allOrdersList.querySelectorAll('.order-status-dropdown').forEach(select => {
-                select.addEventListener('change', async (e) => {
-                    const orderDocId = e.target.dataset.orderId;
-                    const newStatus = e.target.value;
-                    await updateOrderStatus(orderDocId, newStatus);
-                });
-            });
-        }
-        
-        async function updateOrderStatus(orderDocId, newStatus) {
-            const orderDocRef = doc(db, ordersCollection.path, orderDocId);
-            try {
-                await updateDoc(orderDocRef, {
-                    status: newStatus
-                });
-                showMessageModal(`Order status updated to ${newStatus}.`, false, true);
-            } catch (error) {
-                console.error("Error updating order status:", error);
-                showMessageModal("Failed to update order status.", false, true);
-            }
-        }
-
-        function renderAdminOrderDetailsModal(order) {
-            const orderDate = order.timestamp ? new Date(order.timestamp.toDate()).toLocaleString() : 'N/A';
-            adminOrderDetailsContent.innerHTML = `
-                <div class="space-y-4">
-                    <p><span class="font-bold">Order ID:</span> ${order.orderId}</p>
-                    <p><span class="font-bold">Customer Name:</span> ${order.customerName}</p>
-                    <p><span class="font-bold">Email:</span> ${order.customerEmail}</p>
-                    <p><span class="font-bold">Shipping Address:</span> ${order.shippingAddress}, ${order.city}, ${order.state ? order.state + ', ' : ''}${order.country}</p>
-                    <p><span class="font-bold">Order Status:</span> ${order.status}</p>
-                    <p><span class="font-bold">Total:</span> $${order.total.toFixed(2)}</p>
-                    <p><span class="font-bold">Items:</span></p>
-                    <ul class="list-disc list-inside space-y-1">
-                        ${order.items.map(item => `
-                            <li>${item.name} (${item.size}, ${item.color}) - Qty: ${item.quantity}</li>
-                        `).join('')}
-                    </ul>
-                </div>
-                <div class="mt-6 flex justify-end">
-                    <button id="dismiss-order-button" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600" data-order-id="${order.id}">Dismiss Order</button>
-                </div>
-            `;
-            
-            document.getElementById('dismiss-order-button').addEventListener('click', async (e) => {
-                const orderId = e.target.dataset.orderId;
-                // The confirm() call here is for the purpose of demonstrating the intended functionality,
-                // but in a production environment, you should use a custom modal instead of
-                // the native browser confirm() as per the guidelines.
-                if (confirm('Are you sure you want to dismiss this order? This will permanently delete it.')) {
-                    try {
-                        await deleteDoc(doc(db, ordersCollection.path, orderId));
-                        closeAdminOrderDetailsModal();
-                        showMessageModal("Order dismissed successfully.", false, true);
-                    } catch (error) {
-                        console.error("Error dismissing order:", error);
-                        showMessageModal("Failed to dismiss order.", false, true);
-                    }
-                }
-            });
-
-            adminOrderDetailsModal.classList.remove('hidden');
-        }
-
-        async function addProduct(event) {
-            event.preventDefault();
-            showMessageModal("Adding product...", true, false);
-
-            const productName = document.getElementById('product-name').value;
-            const productDescription = document.getElementById('product-description').value;
-            const productImage = document.getElementById('product-image').value;
-            const productColors = document.getElementById('product-colors').value.split(',').map(s => s.trim());
-            const productSizes = document.getElementById('product-sizes').value.split(',').map(s => s.trim());
-            const productPrices = JSON.parse(document.getElementById('product-prices').value);
-
-            try {
-                await addDoc(productsCollection, {
-                    name: productName,
-                    description: productDescription,
-                    image: productImage,
-                    colors: productColors,
-                    sizes: productSizes,
-                    prices: productPrices,
-                });
-                showMessageModal("Product added successfully!", false, true);
-                addProductForm.reset();
-                fetchProducts(); // Refresh product list
-            } catch (error) {
-                console.error("Error adding product: ", error);
-                showMessageModal("Failed to add product. Please check the form and try again.", false, true);
-            }
-        }
-        
-        async function signInWithGoogle() {
-            try {
-                await signInWithPopup(auth, provider);
-            } catch (error) {
-                console.error("Error during sign in:", error);
-                showMessageModal("Failed to sign in. Please try again.", false, true);
-            }
-        }
-
-        async function handleSignOut() {
-            try {
-                await signOut(auth);
-            } catch (error) {
-                console.error("Error during sign out:", error);
-                showMessageModal("Failed to sign out. Please try again.", false, true);
-            }
-        }
-        
-        async function initializeFirestoreAndAuth() {
-            productsCollection = collection(db, 'artifacts', appId, 'public', 'data', 'products');
-            ordersCollection = collection(db, 'artifacts', appId, 'public', 'data', 'orders');
-
-            // Handle initial custom auth token sign-in
-            if (initialAuthToken) {
-                try {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } catch (error) {
-                    console.error("Error signing in with custom token:", error);
-                    // Fallback to anonymous sign-in if custom token fails
-                    await signInAnonymously(auth);
-                }
+                 const p = document.createElement('p');
+                p.className = 'text-gray-500 text-center py-4';
+                p.textContent = 'No orders found.';
+                allOrdersListDiv.appendChild(p);
             } else {
-                await signInAnonymously(auth);
+                filteredOrders.forEach(order => {
+                    const orderElement = document.createElement('div');
+                    orderElement.className = 'bg-gray-100 rounded-lg p-4 shadow-sm';
+                    orderElement.innerHTML = `
+                        <p class="font-bold text-lg">Order ID: <span class="font-mono text-sm">${order.id}</span></p>
+                        <p class="text-gray-700">Customer: ${order.customerName}</p>
+                        <p class="text-gray-700">Total: $${order.total.toFixed(2)}</p>
+                        <p class="text-gray-700">Status: <span class="font-semibold text-blue-600">${order.status}</span></p>
+                        <div class="mt-4">
+                            <button class="bg-blue-500 text-white py-1 px-3 rounded-lg text-sm mr-2 hover:bg-blue-600" onclick="alert('Viewing order details for ${order.id}')">View Details</button>
+                            <button class="bg-red-500 text-white py-1 px-3 rounded-lg text-sm hover:bg-red-600" onclick="alert('Deleting order ${order.id}')">Delete</button>
+                        </div>
+                    `;
+                    allOrdersListDiv.appendChild(orderElement);
+                });
             }
+        };
 
-            // Listen for auth state changes
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    userId = user.uid;
-                    authButtons.classList.add('hidden');
-                    userProfileMenu.classList.remove('hidden');
-                    userName.textContent = user.displayName || 'User';
-                    userAvatar.src = user.photoURL || 'https://placehold.co/32x32/cccccc/ffffff?text=U';
-
-                    // Check if user is admin
-                    const adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'admins', user.uid);
-                    const adminDoc = await getDoc(adminDocRef);
-                    isAdmin = adminDoc.exists();
-                    adminButton.classList.toggle('hidden', !isAdmin);
-
-                } else {
-                    userId = null;
-                    isAdmin = false;
-                    authButtons.classList.remove('hidden');
-                    userProfileMenu.classList.add('hidden');
-                    adminButton.classList.add('hidden');
-                    
-                    // Anonymous user is already signed in at the start, so we don't need to do it again here.
-                }
-            });
-
-            // Initial data fetch
-            fetchProducts();
-        }
-
-        function filterProducts() {
-            const searchTerm = productSearchInput.value.toLowerCase();
-            const productCards = productsList.querySelectorAll('.product-card');
-            
-            let foundProducts = false;
-            productCards.forEach(card => {
-                const productName = card.dataset.name.toLowerCase();
-                if (productName.includes(searchTerm)) {
-                    card.classList.remove('hidden');
-                    foundProducts = true;
-                } else {
-                    card.classList.add('hidden');
-                }
-            });
-            noProductsFoundMessage.classList.toggle('hidden', foundProducts);
-        }
 
         // Event Listeners
-        window.onload = function() {
-            initializeFirestoreAndAuth();
-            
-            cartButton.addEventListener('click', openCartModal);
-            document.getElementById('close-modal-button').addEventListener('click', closeCartModal);
-            checkoutButton.addEventListener('click', openCheckoutModal);
-            document.getElementById('close-checkout-modal').addEventListener('click', closeCheckoutModal);
-            checkoutForm.addEventListener('submit', placeOrder);
-            loginButton.addEventListener('click', signInWithGoogle);
-            signoutLink.addEventListener('click', handleSignOut);
-            viewOrdersLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                profileDropdown.classList.add('hidden');
-                fetchMyOrders();
-                window.showView('orders-view');
-            });
-            userProfileButton.addEventListener('click', () => {
-                profileDropdown.classList.toggle('hidden');
-            });
-            closeMessageModal.addEventListener('click', window.closeMessageModal);
-            
-            acknowledgeButton.addEventListener('click', window.closeAddToCartModal);
+        window.onload = () => {
+            // Check auth state
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUserId = user.uid;
+                    authButtonsDiv.classList.add('hidden');
+                    userProfileMenu.classList.remove('hidden');
+                    userNameSpan.textContent = user.displayName;
+                    userAvatar.src = user.photoURL || 'https://placehold.co/32x32/cccccc/ffffff?text=U';
 
-            cartItemsContainer.addEventListener('click', handleCartAction);
-            
-            productSearchInput.addEventListener('input', () => {
-                const searchTerm = productSearchInput.value.toLowerCase();
-                const cards = productsList.querySelectorAll('.product-card');
-                let found = false;
-                cards.forEach(card => {
-                    if (card.dataset.name.toLowerCase().includes(searchTerm)) {
-                        card.style.display = '';
-                        found = true;
+                    // Check for admin status
+                    const adminRef = doc(db, `admins/${user.uid}`);
+                    const adminDoc = await getDoc(adminRef);
+                    if (adminDoc.exists()) {
+                        isAdmin = true;
+                        adminButton.classList.remove('hidden');
                     } else {
-                        card.style.display = 'none';
+                        isAdmin = false;
+                        adminButton.classList.add('hidden');
                     }
-                });
-                noProductsFoundMessage.classList.toggle('hidden', found);
-            });
 
-            // Admin panel events
-            adminButton.addEventListener('click', () => {
-                window.showView('admin-view');
-                fetchAllOrders();
+                    // Set up real-time listeners for products, orders after auth is ready
+                    setupFirestoreListeners();
+                } else {
+                    currentUserId = null;
+                    isAdmin = false;
+                    authButtonsDiv.classList.remove('hidden');
+                    userProfileMenu.classList.add('hidden');
+                    adminButton.classList.add('hidden');
+                    setupFirestoreListeners();
+                }
             });
-            addProductForm.addEventListener('submit', addProduct);
-            toggleAddProductBtn.addEventListener('click', () => toggleAccordion('add-product-content', 'add-product-arrow'));
-            toggleAllOrdersBtn.addEventListener('click', () => toggleAccordion('all-orders-content', 'all-orders-arrow'));
-            closeAdminOrderDetailsModalBtn.addEventListener('click', closeAdminOrderDetailsModal);
-            orderSearchInput.addEventListener('input', () => fetchAllOrders());
             
-            window.showView('products-view');
+            // Set up event listeners for modal
+            messageBoxOkBtn.addEventListener('click', window.hideAlert);
         };
+
+        const setupFirestoreListeners = () => {
+            // Products listener
+            const productsCollectionRef = collection(db, `artifacts/${firebaseConfig.projectId}/public/data/products`);
+            onSnapshot(productsCollectionRef, (snapshot) => {
+                const products = [];
+                snapshot.forEach(doc => products.push({ id: doc.id, ...doc.data() }));
+                renderProducts(products);
+                window.hideLoading();
+            }, (error) => {
+                console.error("Error fetching products:", error);
+                window.showAlert("Failed to load products. Please check the console.");
+            });
+            
+            // Admin Orders listener
+            const ordersCollectionRef = collection(db, `artifacts/${firebaseConfig.projectId}/users/${currentUserId}/orders`);
+            if (currentUserId) {
+                 onSnapshot(ordersCollectionRef, (snapshot) => {
+                    const orders = [];
+                    snapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
+                    renderOrders(orders); // for user's own orders
+                    renderAdminOrders(orders); // for admin panel
+                }, (error) => {
+                    console.error("Error fetching orders:", error);
+                });
+            }
+
+            window.showLoading();
+        };
+
+        // User authentication
+        loginButton.addEventListener('click', () => {
+            signInWithPopup(auth, provider).catch(error => {
+                console.error("Sign in with Google error:", error);
+                window.showAlert("Failed to sign in. Please try again.");
+            });
+        });
+        signoutLink.addEventListener('click', () => {
+            signOut(auth).catch(error => {
+                console.error("Sign out error:", error);
+                window.showAlert("Failed to sign out. Please try again.");
+            });
+        });
+
+        // Other event listeners
+        productSearchInput.addEventListener('input', (e) => {
+            // Filter products based on search term
+            const searchTerm = e.target.value.toLowerCase();
+            const productsCollectionRef = collection(db, `artifacts/${firebaseConfig.projectId}/public/data/products`);
+            getDocs(productsCollectionRef).then(snapshot => {
+                const allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const filteredProducts = allProducts.filter(p => p.name.toLowerCase().includes(searchTerm));
+                renderProducts(filteredProducts);
+            }).catch(error => {
+                console.error("Error searching products:", error);
+            });
+        });
+
+        cartButton.addEventListener('click', () => {
+            renderCartModal();
+            cartModal.classList.remove('hidden');
+        });
+
+        closeModalButton.addEventListener('click', () => {
+            cartModal.classList.add('hidden');
+        });
+
+        checkoutButton.addEventListener('click', () => {
+            cartModal.classList.add('hidden');
+            checkoutModal.classList.remove('hidden');
+        });
+
+        closeCheckoutModalBtn.addEventListener('click', () => {
+            checkoutModal.classList.add('hidden');
+        });
+
+        checkoutForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUserId) {
+                window.showAlert('Please sign in to place an order.');
+                return;
+            }
+            window.showLoading();
+
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const customerDetails = {
+                name: checkoutName.value,
+                email: checkoutEmail.value,
+                address: checkoutAddress.value,
+                city: checkoutCity.value,
+                country: checkoutCountry.value,
+                state: checkoutState.value,
+            };
+
+            try {
+                const ordersCollectionRef = collection(db, `artifacts/${firebaseConfig.projectId}/users/${currentUserId}/orders`);
+                await addDoc(ordersCollectionRef, {
+                    ...customerDetails,
+                    items: cart,
+                    total: total,
+                    status: 'Pending',
+                    createdAt: serverTimestamp(),
+                });
+                localStorage.setItem('cart', JSON.stringify([]));
+                updateCartDisplay();
+                renderCartModal();
+                checkoutModal.classList.add('hidden');
+                window.showAlert('Order placed successfully!');
+            } catch (e) {
+                console.error("Error placing order:", e);
+                window.showAlert('Failed to place order. Please try again.');
+            } finally {
+                window.hideLoading();
+            }
+        });
+        
+        cartItemsDiv.addEventListener('click', (e) => {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (e.target.classList.contains('remove-from-cart-btn')) {
+                const productId = e.target.dataset.id;
+                cart = cart.filter(item => item.id !== productId);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCartModal();
+            } else if (e.target.classList.contains('update-quantity-btn')) {
+                const productId = e.target.dataset.id;
+                const action = e.target.dataset.action;
+                const item = cart.find(i => i.id === productId);
+                if (item) {
+                    if (action === 'increase') {
+                        item.quantity++;
+                    } else if (action === 'decrease' && item.quantity > 1) {
+                        item.quantity--;
+                    }
+                }
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCartModal();
+            }
+        });
+        
+        viewOrdersLink.addEventListener('click', () => {
+            if (currentUserId) {
+                window.showView('orders-view');
+            } else {
+                window.showAlert('Please sign in to view your orders.');
+            }
+            profileDropdown.classList.add('hidden');
+        });
+
+        userProfileButton.addEventListener('click', () => {
+            profileDropdown.classList.toggle('hidden');
+        });
+
+        adminButton.addEventListener('click', () => {
+            if (isAdmin) {
+                window.showView('admin-view');
+            } else {
+                window.showAlert('You do not have permission to access the admin panel.');
+            }
+        });
+
+        toggleAddProductBtn.addEventListener('click', () => {
+            toggleAccordion(addProductContent, addProductArrow);
+        });
+
+        addProductForm.addEventListener('submit', addProduct);
+
+        toggleAllOrdersBtn.addEventListener('click', () => {
+            toggleAccordion(allOrdersContent, allOrdersArrow);
+        });
+
+        orderSearchInput.addEventListener('input', async () => {
+            const ordersCollectionRef = collection(db, `artifacts/${firebaseConfig.projectId}/users/${currentUserId}/orders`);
+            const snapshot = await getDocs(ordersCollectionRef);
+            const allOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderAdminOrders(allOrders);
+        });
+
 
     </script>
 </body>
