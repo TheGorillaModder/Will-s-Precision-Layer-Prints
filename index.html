@@ -27,19 +27,19 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center">
 
-    <header class="w-full bg-white shadow-md p-4 sticky top-0 z-50">
+    <header class="w-full bg-black text-white shadow-md p-4 sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center max-w-7xl">
-            <button onclick="showView('products-view')" class="text-2xl font-bold text-gray-800 cursor-pointer hover:text-blue-600 transition-colors duration-200">
+            <button onclick="showView('products-view')" class="text-2xl font-bold text-gray-200 cursor-pointer hover:text-red-500 transition-colors duration-200">
                 Will's Precision Layer Prints
             </button>
             <div class="flex items-center space-x-4">
                 <div id="auth-buttons" class="flex items-center space-x-2 hidden">
-                    <button id="login-button" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-blue-700 transition duration-300">Sign in with Google</button>
+                    <button id="login-button" class="bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-red-700 transition duration-300">Sign in with Google</button>
                 </div>
                 <div id="user-profile-menu" class="relative hidden">
-                    <button id="user-profile-button" class="flex items-center space-x-2 bg-gray-200 rounded-full p-2 hover:bg-gray-300 transition-colors duration-200">
+                    <button id="user-profile-button" class="flex items-center space-x-2 bg-gray-700 text-gray-200 rounded-full p-2 hover:bg-gray-600 transition-colors duration-200">
                         <img id="user-avatar" class="w-8 h-8 rounded-full" src="https://placehold.co/32x32/cccccc/ffffff?text=U" onerror="this.src='https://placehold.co/32x32/cccccc/ffffff?text=U';">
-                        <span id="user-name" class="text-gray-800 font-semibold text-sm"></span>
+                        <span id="user-name" class="font-semibold text-sm"></span>
                     </button>
                     <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10 hidden">
                         <a href="#" id="view-orders-link" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">My Orders</a>
@@ -47,7 +47,7 @@
                     </div>
                 </div>
                 <div class="relative">
-                    <button id="cart-button" class="bg-blue-600 text-white rounded-full p-3 hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <button id="cart-button" class="bg-red-600 text-white rounded-full p-3 hover:bg-red-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
@@ -61,6 +61,17 @@
     <div id="app-container" class="container mx-auto p-8 max-w-7xl flex-grow w-full">
         <div id="products-view" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             </div>
+
+        <div id="product-detail-view" class="hidden">
+            <button onclick="showView('products-view')" class="mb-6 flex items-center text-gray-600 hover:text-black transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Back to Products
+            </button>
+            <div id="product-detail-content" class="bg-white rounded-lg shadow-xl p-8 flex flex-col md:flex-row gap-8">
+                </div>
+        </div>
 
         <div id="orders-view" class="hidden">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">My Order History</h2>
@@ -77,40 +88,29 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-                <form id="cart-add-form">
-                    <div id="order-item">
-                        <label for="cart-item" class="block text-gray-700 text-sm font-bold mb-2">Item:</label>
-                        <label type="text" id="cart-item-label"></label>
-                    </div>
-                    <div class="text-right">
-                        <button type="submit" id="submit-cart-button" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-green-600 transition duration-300">
-                            Acknowledge
-                        </button>
-                    </div>
-                </form>
                 <form id="checkout-form">
                     <div class="mb-4">
                         <label for="checkout-name" class="block text-gray-700 text-sm font-bold mb-2">Name:</label>
-                        <input type="text" id="checkout-name" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="checkout-name" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-red-500">
                     </div>
                     <div class="mb-4">
                         <label for="checkout-email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
-                        <input type="email" id="checkout-email" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="email" id="checkout-email" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-red-500">
                     </div>
                     <div class="mb-4">
                         <label for="checkout-address" class="block text-gray-700 text-sm font-bold mb-2">Shipping Address:</label>
-                        <textarea id="checkout-address" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        <textarea id="checkout-address" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
                     </div>
                     <div class="mb-4">
                         <label for="checkout-country" class="block text-gray-700 text-sm font-bold mb-2">Country:</label>
-                        <input type="text" id="checkout-country" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="checkout-country" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-red-500">
                     </div>
                     <div class="mb-4">
                         <label for="checkout-state" class="block text-gray-700 text-sm font-bold mb-2">State/Region (optional):</label>
-                        <input type="text" id="checkout-state" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="text" id="checkout-state" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-red-500">
                     </div>
                     <div class="text-right">
-                        <button type="submit" id="submit-order-button" class="bg-green-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-green-600 transition duration-300">
+                        <button type="submit" id="submit-order-button" class="bg-red-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-red-600 transition duration-300">
                             Place Order
                         </button>
                     </div>
@@ -135,7 +135,7 @@
                     <span class="text-lg font-semibold text-gray-800">Total:</span>
                     <span id="cart-total" class="text-2xl font-bold text-gray-900">$0.00</span>
                 </div>
-                <button id="checkout-button" class="w-full bg-green-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-green-600 transition duration-300 disabled:bg-gray-400" disabled>
+                <button id="checkout-button" class="w-full bg-red-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-red-600 transition duration-300 disabled:bg-gray-400" disabled>
                     Proceed to Checkout
                 </button>
             </div>
@@ -147,7 +147,7 @@
             <h3 class="text-xl font-bold mb-4 text-gray-800">Full Order ID</h3>
             <p id="message-content" class="break-all text-gray-700"></p>
             <div class="mt-6 text-right">
-                <button id="close-message-modal" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300">
+                <button id="close-message-modal" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition duration-300">
                     Close
                 </button>
             </div>
@@ -158,7 +158,7 @@
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative text-center">
             <h3 class="text-2xl font-bold mb-4 text-gray-800">Item Added to Cart!</h3>
             <p id="added-item-name" class="text-lg text-gray-700 mb-6 font-semibold"></p>
-            <button id="acknowledge-button" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+            <button id="acknowledge-button" class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:bg-red-700 transition duration-300">
                 Acknowledge
             </button>
         </div>
@@ -196,16 +196,16 @@
         let db, auth, userId;
         const app_id = "will-s-precision-layer-prints"; // Using the projectId as a unique app identifier
 
-        // Data for our products.
+        // UPDATED: Data for our products with more details
         const products = [
-            { id: 1, name: 'Vintage Camera', price: 125.00, image: 'https://placehold.co/400x300/60a5fa/ffffff?text=Camera' },
-            { id: 2, name: 'Leather Journal', price: 22.50, image: 'https://placehold.co/400x300/4ade80/ffffff?text=Journal' },
-            { id: 3, name: 'Ceramic Mug', price: 15.00, image: 'https://placehold.co/400x300/f87171/ffffff?text=Mug' },
-            { id: 4, name: 'Hand-woven Scarf', price: 55.00, image: 'https://placehold.co/400x300/c084fc/ffffff?text=Scarf' },
-            { id: 5, name: 'Espresso Machine', price: 349.99, image: 'https://placehold.co/400x300/f9a8d4/ffffff?text=Espresso' },
-            { id: 6, name: 'Vinyl Record', price: 30.00, image: 'https://placehold.co/400x300/4b5563/ffffff?text=Vinyl' },
-            { id: 7, name: 'Mechanical Keyboard', price: 150.00, image: 'https://placehold.co/400x300/fcd34d/ffffff?text=Keyboard' },
-            { id: 8, name: 'Acoustic Guitar', price: 450.00, image: 'https://placehold.co/400x300/6ee7b7/ffffff?text=Guitar' }
+            { id: 1, name: 'Vintage Camera', price: 125.00, image: 'https://placehold.co/400x300/60a5fa/ffffff?text=Camera', description: 'A beautifully crafted vintage camera print with intricate details.', color: 'Black and white', size: '8x10 inches' },
+            { id: 2, name: 'Leather Journal', price: 22.50, image: 'https://placehold.co/400x300/4ade80/ffffff?text=Journal', description: 'A realistic print of a classic leather journal, perfect for a study.', color: 'Brown tones', size: 'A4' },
+            { id: 3, name: 'Ceramic Mug', price: 15.00, image: 'https://placehold.co/400x300/f87171/ffffff?text=Mug', description: 'A stunning layered print of a simple ceramic mug with a delicate handle.', color: 'White and gray', size: '12x12 inches' },
+            { id: 4, name: 'Hand-woven Scarf', price: 55.00, image: 'https://placehold.co/400x300/c084fc/ffffff?text=Scarf', description: 'A detailed print showcasing the texture of a hand-woven scarf.', color: 'Gray and red', size: '11x14 inches' },
+            { id: 5, name: 'Espresso Machine', price: 349.99, image: 'https://placehold.co/400x300/f9a8d4/ffffff?text=Espresso', description: 'A complex, multi-layered print of an espresso machine with all its parts visible.', color: 'Metallic gray', size: '16x20 inches' },
+            { id: 6, name: 'Vinyl Record', price: 30.00, image: 'https://placehold.co/400x300/4b5563/ffffff?text=Vinyl', description: 'A nostalgic print of a vinyl record and player, capturing the essence of music.', color: 'Black with silver highlights', size: 'A3' },
+            { id: 7, name: 'Mechanical Keyboard', price: 150.00, image: 'https://placehold.co/400x300/fcd34d/ffffff?text=Keyboard', description: 'A precise layered print of a mechanical keyboard, a must-have for tech enthusiasts.', color: 'Black and red keys', size: '8x24 inches' },
+            { id: 8, name: 'Acoustic Guitar', price: 450.00, image: 'https://placehold.co/400x300/6ee7b7/ffffff?text=Guitar', description: 'An elegant print of an acoustic guitar, highlighting the wood grain and strings.', color: 'Natural wood tones', size: '20x30 inches' }
         ];
 
         // UI elements
@@ -238,10 +238,14 @@
         const messageContent = document.getElementById('message-content');
         const closeMessageModal = document.getElementById('close-message-modal');
 
-        // ADDED: New UI elements for the add-to-cart confirmation modal
+        // NEW: UI elements for the add-to-cart confirmation modal
         const addToCartModal = document.getElementById('add-to-cart-modal');
         const addedItemName = document.getElementById('added-item-name');
         const acknowledgeButton = document.getElementById('acknowledge-button');
+
+        // NEW: UI elements for the product detail page
+        const productDetailView = document.getElementById('product-detail-view');
+        const productDetailContent = document.getElementById('product-detail-content');
 
         // --- Discord Webhook Configuration ---
         // Replace with your own Discord webhook URL if you want order notifications
@@ -254,10 +258,12 @@
                 const productCard = document.createElement('div');
                 productCard.className = 'bg-white rounded-lg shadow-xl p-6 flex flex-col items-center transition-transform transform hover:scale-105 duration-300';
                 productCard.innerHTML = `
-                    <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <div class="cursor-pointer" onclick="showProductDetail(${product.id})">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover rounded-lg mb-4">
+                    </div>
                     <h3 class="text-xl font-bold text-gray-800 text-center mb-2">${product.name}</h3>
                     <p class="text-lg text-gray-600 font-medium mb-4">$${product.price.toFixed(2)}</p>
-                    <button onclick="addToCart(${product.id})" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 w-full">
+                    <button onclick="addToCartFromMain(${product.id})" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-300 w-full">
                         Add to Cart
                     </button>
                 `;
@@ -265,7 +271,35 @@
             });
         }
 
-        // Adds a product to the cart or increments its quantity
+        // NEW: Renders the product detail view
+        function showProductDetail(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) {
+                console.error('Product not found:', productId);
+                return;
+            }
+
+            productDetailContent.innerHTML = `
+                <div class="flex-shrink-0 md:w-1/2">
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-auto object-cover rounded-lg">
+                </div>
+                <div class="flex flex-col md:w-1/2">
+                    <h2 class="text-4xl font-bold text-gray-800 mb-2">${product.name}</h2>
+                    <p class="text-2xl text-gray-900 font-bold mb-4">$${product.price.toFixed(2)}</p>
+                    <p class="text-gray-700 mb-6">${product.description}</p>
+                    <div class="mb-6 space-y-2">
+                        <p class="text-gray-600"><span class="font-semibold">Color:</span> ${product.color}</p>
+                        <p class="text-gray-600"><span class="font-semibold">Size:</span> ${product.size}</p>
+                    </div>
+                    <button onclick="addToCart(${product.id})" class="bg-red-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-red-700 transition duration-300 w-full md:w-auto">
+                        Add to Cart
+                    </button>
+                </div>
+            `;
+            showView('product-detail-view');
+        }
+
+        // UPDATED: Function to add a product to the cart (now from the detail page)
         window.addToCart = function(productId) {
             const product = products.find(p => p.id === productId);
             const cartItem = cart.find(item => item.id === productId);
@@ -276,10 +310,24 @@
                 cart.push({ ...product, quantity: 1 });
             }
             
-            // ADDED: Show the pop-up with the item name
+            // Show the pop-up with the item name
             addedItemName.textContent = product.name;
             addToCartModal.classList.remove('hidden');
 
+            updateCartBadge();
+        }
+
+        // NEW: Separate function for Add to Cart button on the main page to maintain the same popup logic
+        window.addToCartFromMain = function(productId) {
+            const product = products.find(p => p.id === productId);
+            const cartItem = cart.find(item => item.id === productId);
+            if (cartItem) {
+                cartItem.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            addedItemName.textContent = product.name;
+            addToCartModal.classList.remove('hidden');
             updateCartBadge();
         }
 
@@ -488,10 +536,10 @@
                             <button onclick="showMessageModal('Full Order ID: ${order.id}')" class="text-xl font-bold text-gray-800 cursor-pointer hover:underline">
                                 Order ID: ${order.id.slice(0, 8)}...
                             </button>
-                            <span class="font-bold text-green-600">$${orderTotal}</span>
+                            <span class="font-bold text-red-600">$${orderTotal}</span>
                         </div>
                         <p class="text-sm text-gray-500 mb-2">Order placed on: ${orderDate}</p>
-                        <p class="font-bold text-lg text-blue-600 mb-2">Status: ${order.status}</p>
+                        <p class="font-bold text-lg text-red-600 mb-2">Status: ${order.status}</p>
                         <ul class="list-disc list-inside text-gray-600 space-y-1">
                             ${order.items.map(item => `<li>${item.name} x${item.quantity} ($${(item.price * item.quantity).toFixed(2)})</li>`).join('')}
                         </ul>
@@ -501,9 +549,9 @@
             }
         }
 
-        // Swaps the main view between products and orders
+        // Swaps the main view between products, product details, and orders
         function showView(viewId) {
-            const views = [productsView, ordersView];
+            const views = [productsView, ordersView, productDetailView];
             views.forEach(view => {
                 if (view.id === viewId) {
                     view.classList.remove('hidden');
@@ -584,7 +632,7 @@
             });
             closeMessageModal.addEventListener('click', closeMessageModal);
             
-            // ADDED: Event listener for the new "Acknowledge" button
+            // Event listener for the new "Acknowledge" button
             acknowledgeButton.addEventListener('click', closeAddToCartModal);
 
             // Show products view by default
