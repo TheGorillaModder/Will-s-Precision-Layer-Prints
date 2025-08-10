@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Will's Precision Layer Prints</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,15 +28,19 @@
 </head>
 <body class="bg-gray-500 min-h-screen flex flex-col items-center">
 
+    <!-- Header -->
     <header class="w-full bg-black text-white shadow-md p-4 sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center max-w-7xl">
+            <!-- Logo now performs a full page refresh -->
             <button onclick="window.location.reload()" class="flex items-center space-x-2 text-2xl font-bold text-gray-200 cursor-pointer hover:text-red-500 transition-colors duration-200">
                 <img src="wplp.png" alt="WPLP Logo" class="h-8"> 
                 <span>Will's Precision Layer Prints</span>
             </button>
             <div class="flex items-center space-x-4">
+                <!-- Admin button (visible only to admin user) -->
                 <button id="admin-button" class="hidden bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-blue-700 transition duration-300">Admin</button>
 
+                <!-- User Profile/Login Button -->
                 <div id="auth-buttons" class="flex items-center space-x-2 hidden">
                     <button id="login-button" class="bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-red-700 transition duration-300">Sign in with Google</button>
                 </div>
@@ -49,6 +54,7 @@
                         <a href="#" id="signout-link" class="block px-4 py-2 text-red-500 hover:bg-gray-100 border-t">Sign Out</a>
                     </div>
                 </div>
+                <!-- Cart Button -->
                 <div class="relative">
                     <button id="cart-button" class="bg-red-600 text-white rounded-full p-3 hover:bg-red-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -61,8 +67,11 @@
         </div>
     </header>
 
+    <!-- Main Content Containers -->
     <div id="app-container" class="container mx-auto p-8 max-w-7xl flex-grow w-full">
+        <!-- Products View -->
         <div id="products-view" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <!-- Product cards will be dynamically inserted here -->
             <div id="products-loading" class="col-span-full flex justify-center items-center py-12">
                 <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -72,6 +81,7 @@
             </div>
         </div>
 
+        <!-- Product Detail View -->
         <div id="product-detail-view" class="hidden relative">
             <button onclick="window.showView('products-view')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200 z-10 p-2 rounded-full bg-white bg-opacity-70">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -79,9 +89,11 @@
                 </svg>
             </button>
             <div id="product-detail-content" class="bg-white rounded-lg shadow-xl p-8 flex flex-col md:flex-row gap-8">
-                </div>
+                <!-- Product details will be dynamically inserted here -->
+            </div>
         </div>
 
+        <!-- Order History View -->
         <div id="orders-view" class="hidden relative">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">My Order History</h2>
             <button onclick="window.showView('products-view')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200 p-2 rounded-full bg-white bg-opacity-70">
@@ -94,6 +106,7 @@
             </div>
         </div>
 
+        <!-- Admin View -->
         <div id="admin-view" class="hidden relative">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">Admin Dashboard</h2>
             <button onclick="window.showView('products-view')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200 p-2 rounded-full bg-white bg-opacity-70">
@@ -102,46 +115,60 @@
                 </svg>
             </button>
             <div class="space-y-8">
-                <div class="bg-white rounded-lg shadow-xl p-6">
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Add a New Product</h3>
-                    <form id="add-product-form" class="space-y-4">
-                        <div>
-                            <label for="product-name" class="block text-gray-700 font-semibold mb-1">Product Name</label>
-                            <input type="text" id="product-name" required class="w-full p-2 border rounded-md">
-                        </div>
-                        <div>
-                            <label for="product-description" class="block text-gray-700 font-semibold mb-1">Description</label>
-                            <textarea id="product-description" required class="w-full p-2 border rounded-md"></textarea>
-                        </div>
-                        <div>
-                            <label for="product-image" class="block text-gray-700 font-semibold mb-1">Image URL</label>
-                            <input type="text" id="product-image" required class="w-full p-2 border rounded-md">
-                        </div>
-                        <div>
-                            <label for="product-colors" class="block text-gray-700 font-semibold mb-1">Colors (comma separated)</label>
-                            <input type="text" id="product-colors" required class="w-full p-2 border rounded-md">
-                        </div>
-                        <div>
-                            <label for="product-sizes" class="block text-gray-700 font-semibold mb-1">Sizes (comma separated)</label>
-                            <input type="text" id="product-sizes" required class="w-full p-2 border rounded-md">
-                        </div>
-                        <div>
-                            <label for="product-prices" class="block text-gray-700 font-semibold mb-1">Prices (JSON format)</label>
-                            <textarea id="product-prices" required class="w-full p-2 border rounded-md" placeholder='{"Small": 5.00, "Medium": 11.00, "Large": 20.00}'></textarea>
-                            <p class="text-sm text-gray-500 mt-1">Example: `{"Small": 5.00, "Large": 20.00}`</p>
-                        </div>
-                        <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 w-full">Add Product</button>
-                    </form>
+                <!-- Add Product Form - Accordion -->
+                <div class="bg-white rounded-lg shadow-xl">
+                    <button id="toggle-add-product" class="flex justify-between items-center w-full p-6 text-2xl font-bold text-gray-800 border-b-2 border-gray-100 hover:bg-gray-50 transition duration-300">
+                        Add a New Product
+                        <svg id="add-product-arrow" class="w-6 h-6 transform rotate-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="add-product-content" class="p-6 hidden">
+                        <form id="add-product-form" class="space-y-4">
+                            <div>
+                                <label for="product-name" class="block text-gray-700 font-semibold mb-1">Product Name</label>
+                                <input type="text" id="product-name" required class="w-full p-2 border rounded-md">
+                            </div>
+                            <div>
+                                <label for="product-description" class="block text-gray-700 font-semibold mb-1">Description</label>
+                                <textarea id="product-description" required class="w-full p-2 border rounded-md"></textarea>
+                            </div>
+                            <div>
+                                <label for="product-image" class="block text-gray-700 font-semibold mb-1">Image URL</label>
+                                <input type="text" id="product-image" required class="w-full p-2 border rounded-md">
+                            </div>
+                            <div>
+                                <label for="product-colors" class="block text-gray-700 font-semibold mb-1">Colors (comma separated)</label>
+                                <input type="text" id="product-colors" required class="w-full p-2 border rounded-md">
+                            </div>
+                            <div>
+                                <label for="product-sizes" class="block text-gray-700 font-semibold mb-1">Sizes (comma separated)</label>
+                                <input type="text" id="product-sizes" required class="w-full p-2 border rounded-md">
+                            </div>
+                            <div>
+                                <label for="product-prices" class="block text-gray-700 font-semibold mb-1">Prices (JSON format)</label>
+                                <textarea id="product-prices" required class="w-full p-2 border rounded-md" placeholder='{"Small": 5.00, "Medium": 11.00, "Large": 20.00}'></textarea>
+                                <p class="text-sm text-gray-500 mt-1">Example: `{"Small": 5.00, "Large": 20.00}`</p>
+                            </div>
+                            <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 w-full">Add Product</button>
+                        </form>
+                    </div>
                 </div>
-                <div class="bg-white rounded-lg shadow-xl p-6">
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">All Orders</h3>
-                    <div id="all-orders-list" class="space-y-4">
-                        <p class="text-gray-500 text-center py-4">No orders yet.</p>
+
+                <!-- All Orders List - Accordion -->
+                <div class="bg-white rounded-lg shadow-xl">
+                    <button id="toggle-all-orders" class="flex justify-between items-center w-full p-6 text-2xl font-bold text-gray-800 border-b-2 border-gray-100 hover:bg-gray-50 transition duration-300">
+                        All Orders
+                        <svg id="all-orders-arrow" class="w-6 h-6 transform rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="all-orders-content" class="p-6">
+                        <div id="all-orders-list" class="space-y-4">
+                            <p class="text-gray-500 text-center py-4">No orders yet.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Checkout Form Modal -->
         <div id="checkout-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 relative">
                 <h2 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Checkout Details</h2>
@@ -163,6 +190,12 @@
                         <label for="checkout-address" class="block text-gray-700 text-sm font-bold mb-2">Shipping Address:</label>
                         <textarea id="checkout-address" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
                     </div>
+                    <!-- New field for City -->
+                    <div class="mb-4">
+                        <label for="checkout-city" class="block text-gray-700 text-sm font-bold mb-2">City:</label>
+                        <input type="text" id="checkout-city" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <!-- New fields for Country and State -->
                     <div class="mb-4">
                         <label for="checkout-country" class="block text-gray-700 text-sm font-bold mb-2">Country:</label>
                         <input type="text" id="checkout-country" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-red-500">
@@ -180,6 +213,7 @@
             </div>
         </div>
 
+        <!-- Cart Modal (initially hidden) -->
         <div id="cart-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 relative">
                 <h2 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Your Cart</h2>
@@ -203,6 +237,7 @@
             </div>
         </div>
 
+        <!-- Message Modal for showing full Order ID -->
         <div id="message-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative">
                 <h3 class="text-xl font-bold mb-4 text-gray-800">Full Order ID</h3>
@@ -214,7 +249,8 @@
                 </div>
             </div>
         </div>
-        
+
+        <!-- Pop-up for "Add to Cart" confirmation -->
         <div id="add-to-cart-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative text-center">
                 <h3 class="text-2xl font-bold mb-4 text-gray-800">Item Added to Cart!</h3>
@@ -225,6 +261,7 @@
             </div>
         </div>
 
+        <!-- Modal for selecting product options -->
         <div id="options-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative">
                 <button id="close-options-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200">
@@ -233,15 +270,37 @@
                     </svg>
                 </button>
                 <div id="options-modal-content">
-                    </div>
+                    <!-- Product details and options will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- New Modal for Admin Order Details -->
+        <div id="admin-order-details-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-xl p-6 relative">
+                <h2 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Order Details</h2>
+                <button id="close-admin-order-details-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <div id="admin-order-details-content" class="space-y-4">
+                    <!-- Order details will be dynamically inserted here -->
+                </div>
+                <div class="mt-6 text-right">
+                    <button id="dismiss-order-button" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition duration-300">
+                        Dismiss Order
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
         // --- IMPORTANT: Paste your Firebase config here ---
         const firebaseConfig = {
@@ -309,6 +368,19 @@
         const adminView = document.getElementById('admin-view');
         const addProductForm = document.getElementById('add-product-form');
         const allOrdersList = document.getElementById('all-orders-list');
+        const toggleAddProductBtn = document.getElementById('toggle-add-product');
+        const addProductContent = document.getElementById('add-product-content');
+        const addProductArrow = document.getElementById('add-product-arrow');
+        const toggleAllOrdersBtn = document.getElementById('toggle-all-orders');
+        const allOrdersContent = document.getElementById('all-orders-content');
+        const allOrdersArrow = document.getElementById('all-orders-arrow');
+
+        // New Order Details Modal elements
+        const adminOrderDetailsModal = document.getElementById('admin-order-details-modal');
+        const adminOrderDetailsContent = document.getElementById('admin-order-details-content');
+        const closeAdminOrderDetailsModalBtn = document.getElementById('close-admin-order-details-modal');
+        const dismissOrderButton = document.getElementById('dismiss-order-button');
+        let currentAdminOrderId = null; // To keep track of the order ID being viewed
 
         // --- Discord Webhook Configuration ---
         const DISCORD_WEBHOOK_URL = 'https://discordapp.com/api/webhooks/1403855383193456681/6_48vuqKdyd18SOwerezdW-ycG-ZenwQNHwfO_q6vHcrzVCyfWKXCjkgAbX4b4mlRTDb';
@@ -587,10 +659,11 @@
             const name = document.getElementById('checkout-name').value;
             const email = document.getElementById('checkout-email').value;
             const address = document.getElementById('checkout-address').value;
+            const city = document.getElementById('checkout-city').value;
             const country = document.getElementById('checkout-country').value;
             const state = document.getElementById('checkout-state').value;
 
-            if (!name || !email || !address || !country) {
+            if (!name || !email || !address || !city || !country) {
                 window.showMessageModal('Please fill out all required fields.');
                 return;
             }
@@ -605,6 +678,7 @@
                 name: name,
                 email: email,
                 address: address,
+                city: city, // New field
                 country: country,
                 state: state,
                 status: 'Processing',
@@ -622,9 +696,11 @@
                 name: name,
                 email: email,
                 address: address,
+                city: city, // New field
                 country: country,
                 state: state,
                 status: 'Processing',
+                adminDismissed: false, // New field for admin dismiss functionality
                 timestamp: serverTimestamp()
             });
 
@@ -634,7 +710,7 @@
             ).join('\n');
 
             const discordPayload = {
-                content: `**New Order from ${name} (ID: ${orderId})**\n\n**Customer Details:**\nEmail: ${email}\nShipping Address: ${address}, ${state}, ${country}\n\n**Items:**\n${messageContent}\n\n**Total:** $${total.toFixed(2)}`,
+                content: `**New Order from ${name} (ID: ${orderId})**\n\n**Customer Details:**\nEmail: ${email}\nShipping Address: ${address}, ${city}, ${state}, ${country}\n\n**Items:**\n${messageContent}\n\n**Total:** $${total.toFixed(2)}`,
                 username: "Store Checkout Bot",
                 avatar_url: "https://placehold.co/48x48/60a5fa/ffffff?text=🛒"
             };
@@ -701,30 +777,84 @@
         // Renders all orders for the admin view
         function renderAllOrders(orders) {
             allOrdersList.innerHTML = '';
-            if (orders.length === 0) {
-                allOrdersList.innerHTML = `<p class="text-gray-500 text-center py-4">No orders yet.</p>`;
+            // Filter out dismissed orders for the admin view
+            const activeOrders = orders.filter(order => !order.adminDismissed);
+
+            if (activeOrders.length === 0) {
+                allOrdersList.innerHTML = `<p class="text-gray-500 text-center py-4">No active orders.</p>`;
             } else {
-                orders.forEach(order => {
+                activeOrders.forEach(order => {
                     const orderTotal = order.total.toFixed(2);
                     const orderDate = order.timestamp ? new Date(order.timestamp.seconds * 1000).toLocaleString() : 'N/A';
                     const orderEl = document.createElement('div');
-                    orderEl.className = 'bg-white rounded-lg shadow-md p-4';
+                    orderEl.className = 'bg-white rounded-lg shadow-md p-4 flex justify-between items-center';
                     orderEl.innerHTML = `
-                        <div class="flex justify-between items-center mb-2">
+                        <div>
                             <button onclick="window.showMessageModal('Full Order ID: ${order.id}')" class="text-xl font-bold text-gray-800 cursor-pointer hover:underline">
                                 Order ID: ${order.id.slice(0, 8)}...
                             </button>
-                            <span class="font-bold text-red-600">$${orderTotal}</span>
+                            <p class="text-sm text-gray-500">Order placed by: ${order.name}</p>
+                            <p class="text-sm text-gray-500">Status: <span class="font-semibold text-red-600">${order.status}</span></p>
                         </div>
-                        <p class="text-sm text-gray-500 mb-2">Order placed on: ${orderDate}</p>
-                        <p class="text-sm text-gray-500 mb-2">User: ${order.name} (${order.userId.slice(0, 8)}...)</p>
-                        <p class="font-bold text-lg text-red-600 mb-2">Status: ${order.status}</p>
-                        <ul class="list-disc list-inside text-gray-600 space-y-1">
-                            ${order.items.map(item => `<li>${item.name} (${item.selectedSize} ${item.selectedColor}) x${item.quantity} ($${(item.price * item.quantity).toFixed(2)})</li>`).join('')}
-                        </ul>
+                        <div class="text-right space-y-2">
+                            <span class="font-bold text-red-600 text-lg block">$${orderTotal}</span>
+                            <button onclick="window.showAdminOrderDetailsModal('${order.id}')" class="bg-blue-500 text-white text-sm font-bold py-1 px-3 rounded-lg hover:bg-blue-600 transition duration-300">
+                                Show Details
+                            </button>
+                        </div>
                     `;
                     allOrdersList.appendChild(orderEl);
                 });
+            }
+        }
+
+        // Shows the admin order details modal
+        window.showAdminOrderDetailsModal = function(orderId) {
+            const order = products.find(p => p.id === orderId);
+            if (!order) {
+                console.error('Order not found:', orderId);
+                return;
+            }
+
+            currentAdminOrderId = orderId;
+
+            const orderDetailsHtml = `
+                <div class="space-y-2 text-gray-700">
+                    <p><strong>Customer Name:</strong> ${order.name}</p>
+                    <p><strong>Email:</strong> ${order.email}</p>
+                    <p><strong>Shipping Address:</strong> ${order.address}, ${order.city}, ${order.state}, ${order.country}</p>
+                    <p><strong>Order Status:</strong> <span class="font-bold text-red-600">${order.status}</span></p>
+                    <p class="text-lg font-bold mt-4">Order Items:</p>
+                    <ul class="list-disc list-inside space-y-1">
+                        ${order.items.map(item => `<li>${item.name} (${item.selectedSize} ${item.selectedColor}) x${item.quantity} ($${(item.price * item.quantity).toFixed(2)})</li>`).join('')}
+                    </ul>
+                    <p class="text-xl font-bold text-red-600 mt-4">Total: $${order.total.toFixed(2)}</p>
+                </div>
+            `;
+
+            adminOrderDetailsContent.innerHTML = orderDetailsHtml;
+            adminOrderDetailsModal.classList.remove('hidden');
+        }
+        
+        // Closes the admin order details modal
+        function closeAdminOrderDetailsModal() {
+            adminOrderDetailsModal.classList.add('hidden');
+            currentAdminOrderId = null;
+        }
+
+        // Dismisses an order for the admin view
+        async function dismissOrder() {
+            if (!currentAdminOrderId) return;
+            try {
+                const orderRef = doc(db, 'artifacts', app_id, 'public', 'data', 'all_orders', currentAdminOrderId);
+                await updateDoc(orderRef, {
+                    adminDismissed: true
+                });
+                closeAdminOrderDetailsModal();
+                window.showMessageModal('Order has been dismissed from your view.');
+            } catch (error) {
+                console.error('Error dismissing order:', error);
+                window.showMessageModal('Failed to dismiss order.');
             }
         }
 
@@ -738,6 +868,14 @@
                     view.classList.add('hidden');
                 }
             });
+        }
+
+        // Toggles the visibility of an accordion section
+        function toggleAccordion(contentId, arrowId) {
+            const content = document.getElementById(contentId);
+            const arrow = document.getElementById(arrowId);
+            content.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
         }
 
         // Firebase Auth functions
@@ -872,6 +1010,10 @@
             // Admin panel events
             adminButton.addEventListener('click', () => window.showView('admin-view'));
             addProductForm.addEventListener('submit', addProduct);
+            toggleAddProductBtn.addEventListener('click', () => toggleAccordion('add-product-content', 'add-product-arrow'));
+            toggleAllOrdersBtn.addEventListener('click', () => toggleAccordion('all-orders-content', 'all-orders-arrow'));
+            closeAdminOrderDetailsModalBtn.addEventListener('click', closeAdminOrderDetailsModal);
+            dismissOrderButton.addEventListener('click', dismissOrder);
 
             window.showView('products-view');
         };
