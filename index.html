@@ -254,23 +254,38 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Message/Alert Modal (instead of window.alert) -->
-    <div id="message-box" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 modal-bg">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative text-center">
-            <h3 class="text-2xl font-bold mb-4">Message</h3>
-            <p id="message-box-content" class="text-gray-700 mb-6"></p>
-            <button id="message-box-ok-btn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition duration-300">OK</button>
+        <!-- Admin Order Details Modal (NEWLY ADDED) -->
+        <div id="admin-order-details-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-xl p-6 relative">
+                <h2 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Order Details</h2>
+                <button id="close-admin-order-details-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <div id="admin-order-details-content" class="space-y-4">
+                    <!-- Details will be populated here -->
+                </div>
+            </div>
         </div>
-    </div>
 
-    <!-- Loading Spinner Overlay -->
-    <div id="loading-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-bg">
-        <svg class="animate-spin -ml-1 mr-3 h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
+        <!-- Message/Alert Modal (instead of window.alert) -->
+        <div id="message-box" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 modal-bg">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative text-center">
+                <h3 class="text-2xl font-bold mb-4">Message</h3>
+                <p id="message-box-content" class="text-gray-700 mb-6"></p>
+                <button id="message-box-ok-btn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition duration-300">OK</button>
+            </div>
+        </div>
+
+        <!-- Loading Spinner Overlay -->
+        <div id="loading-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-bg">
+            <svg class="animate-spin -ml-1 mr-3 h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </div>
     </div>
 
     <script type="module">
@@ -355,6 +370,10 @@
         const allOrdersArrow = document.getElementById('all-orders-arrow');
         const orderSearchInput = document.getElementById('order-search');
         const allOrdersListDiv = document.getElementById('all-orders-list');
+
+        const adminOrderDetailsModal = document.getElementById('admin-order-details-modal');
+        const closeAdminOrderDetailsModalBtn = document.getElementById('close-admin-order-details-modal-btn');
+        const adminOrderDetailsContent = document.getElementById('admin-order-details-content');
 
         const messageBox = document.getElementById('message-box');
         const messageBoxContent = document.getElementById('message-box-content');
@@ -618,13 +637,69 @@
                         <p class="text-gray-700">Total: $${order.total.toFixed(2)}</p>
                         <p class="text-gray-700">Status: <span class="font-semibold text-blue-600">${order.status}</span></p>
                         <div class="mt-4">
-                            <button class="bg-blue-500 text-white py-1 px-3 rounded-lg text-sm mr-2 hover:bg-blue-600" onclick="alert('Viewing order details for ${order.id}')">View Details</button>
-                            <button class="bg-red-500 text-white py-1 px-3 rounded-lg text-sm hover:bg-red-600" onclick="alert('Deleting order ${order.id}')">Delete</button>
+                            <button class="bg-blue-500 text-white py-1 px-3 rounded-lg text-sm mr-2 hover:bg-blue-600" onclick="showAdminOrderDetails('${order.id}', '${order.customerUID}')">View Details</button>
+                            <button class="bg-red-500 text-white py-1 px-3 rounded-lg text-sm hover:bg-red-600" onclick="deleteAdminOrder('${order.id}', '${order.customerUID}')">Delete</button>
                         </div>
                     `;
                     allOrdersListDiv.appendChild(orderElement);
                 });
             }
+        };
+
+        const showAdminOrderDetails = async (orderId, customerUID) => {
+            window.showLoading();
+            try {
+                const orderRef = doc(db, `artifacts/${appId}/users/${customerUID}/orders`, orderId);
+                const orderDoc = await getDoc(orderRef);
+
+                if (orderDoc.exists()) {
+                    const order = { id: orderDoc.id, ...orderDoc.data() };
+                    adminOrderDetailsContent.innerHTML = `
+                        <p><span class="font-semibold">Order ID:</span> <span class="font-mono text-sm">${order.id}</span></p>
+                        <p><span class="font-semibold">Customer Name:</span> ${order.name}</p>
+                        <p><span class="font-semibold">Email:</span> ${order.email}</p>
+                        <p><span class="font-semibold">Shipping Address:</span> ${order.address}, ${order.city}, ${order.state || ''}, ${order.country}</p>
+                        <p><span class="font-semibold">Total:</span> $${order.total.toFixed(2)}</p>
+                        <p><span class="font-semibold">Status:</span> ${order.status}</p>
+                        <div class="mt-4">
+                            <h3 class="font-bold text-lg">Items:</h3>
+                            <ul class="list-disc list-inside space-y-2">
+                                ${order.items.map(item => `
+                                    <li>${item.name} (${item.size}, ${item.color}) x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}</li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    `;
+                    adminOrderDetailsModal.classList.remove('hidden');
+                } else {
+                    window.showAlert('Order not found.');
+                }
+            } catch (error) {
+                console.error('Error fetching admin order details:', error);
+                window.showAlert('Failed to fetch order details.');
+            } finally {
+                window.hideLoading();
+            }
+        };
+
+        const deleteAdminOrder = async (orderId, customerUID) => {
+            if (confirm('Are you sure you want to delete this order? This action cannot be undone.')) {
+                window.showLoading();
+                try {
+                    const orderRef = doc(db, `artifacts/${appId}/users/${customerUID}/orders`, orderId);
+                    await deleteDoc(orderRef);
+                    window.showAlert('Order deleted successfully.');
+                } catch (error) {
+                    console.error('Error deleting order:', error);
+                    window.showAlert('Failed to delete order.');
+                } finally {
+                    window.hideLoading();
+                }
+            }
+        };
+
+        const closeAdminOrderDetailsModal = () => {
+            adminOrderDetailsModal.classList.add('hidden');
         };
 
 
@@ -676,6 +751,7 @@
             
             // Set up event listeners for modal
             messageBoxOkBtn.addEventListener('click', window.hideAlert);
+            closeAdminOrderDetailsModalBtn.addEventListener('click', closeAdminOrderDetailsModal);
         };
 
         const setupFirestoreListeners = () => {
@@ -698,9 +774,30 @@
                     const orders = [];
                     snapshot.forEach(doc => orders.push({ id: doc.id, ...doc.data() }));
                     renderOrders(orders); // for user's own orders
-                    renderAdminOrders(orders); // for admin panel
                 }, (error) => {
-                    console.error("Error fetching orders:", error);
+                    console.error("Error fetching user orders:", error);
+                });
+            }
+
+            // All orders listener for the admin panel
+            if (isAdmin) {
+                const allUsersRef = collection(db, `artifacts/${appId}/users`);
+                // This is a complex query that needs to be handled differently.
+                // For now, let's just fetch all orders from all users and filter them in memory.
+                getDocs(allUsersRef).then(async (userDocs) => {
+                    let allOrders = [];
+                    for (const userDoc of userDocs.docs) {
+                        const userOrdersRef = collection(db, `artifacts/${appId}/users/${userDoc.id}/orders`);
+                        const orderDocs = await getDocs(userOrdersRef);
+                        orderDocs.forEach(orderDoc => {
+                            allOrders.push({
+                                id: orderDoc.id,
+                                customerUID: userDoc.id,
+                                ...orderDoc.data()
+                            });
+                        });
+                    }
+                    renderAdminOrders(allOrders);
                 });
             }
 
@@ -774,6 +871,7 @@
                 city: checkoutCity.value,
                 country: checkoutCountry.value,
                 state: checkoutState.value,
+                customerUID: currentUserId // Storing the UID for admin access
             };
 
             try {
@@ -837,6 +935,23 @@
         adminButton.addEventListener('click', () => {
             if (isAdmin) {
                 window.showView('admin-view');
+                // Refresh admin orders when opening the panel
+                const allUsersRef = collection(db, `artifacts/${appId}/users`);
+                getDocs(allUsersRef).then(async (userDocs) => {
+                    let allOrders = [];
+                    for (const userDoc of userDocs.docs) {
+                        const userOrdersRef = collection(db, `artifacts/${appId}/users/${userDoc.id}/orders`);
+                        const orderDocs = await getDocs(userOrdersRef);
+                        orderDocs.forEach(orderDoc => {
+                            allOrders.push({
+                                id: orderDoc.id,
+                                customerUID: userDoc.id,
+                                ...orderDoc.data()
+                            });
+                        });
+                    }
+                    renderAdminOrders(allOrders);
+                });
             } else {
                 window.showAlert('You do not have permission to access the admin panel.');
             }
@@ -851,11 +966,22 @@
         toggleAllOrdersBtn.addEventListener('click', () => {
             toggleAccordion(allOrdersContent, allOrdersArrow);
         });
-
+        
         orderSearchInput.addEventListener('input', async () => {
-            const ordersCollectionRef = collection(db, `artifacts/${appId}/users/${currentUserId}/orders`);
-            const snapshot = await getDocs(ordersCollectionRef);
-            const allOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const allUsersRef = collection(db, `artifacts/${appId}/users`);
+            const userDocs = await getDocs(allUsersRef);
+            let allOrders = [];
+            for (const userDoc of userDocs.docs) {
+                const userOrdersRef = collection(db, `artifacts/${appId}/users/${userDoc.id}/orders`);
+                const orderDocs = await getDocs(userOrdersRef);
+                orderDocs.forEach(orderDoc => {
+                    allOrders.push({
+                        id: orderDoc.id,
+                        customerUID: userDoc.id,
+                        ...orderDoc.data()
+                    });
+                });
+            }
             renderAdminOrders(allOrders);
         });
 
