@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Will's Precision Layer Prints</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,15 +27,12 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center">
 
-    <!-- Header -->
     <header class="w-full bg-white shadow-md p-4 sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center max-w-7xl">
-            <!-- Store name now acts as a button to go back to the products view -->
             <button onclick="showView('products-view')" class="text-2xl font-bold text-gray-800 cursor-pointer hover:text-blue-600 transition-colors duration-200">
                 Will's Precision Layer Prints
             </button>
             <div class="flex items-center space-x-4">
-                <!-- User Profile/Login Button -->
                 <div id="auth-buttons" class="flex items-center space-x-2 hidden">
                     <button id="login-button" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-blue-700 transition duration-300">Sign in with Google</button>
                 </div>
@@ -50,7 +46,6 @@
                         <a href="#" id="signout-link" class="block px-4 py-2 text-red-500 hover:bg-gray-100 border-t">Sign Out</a>
                     </div>
                 </div>
-                <!-- Cart Button -->
                 <div class="relative">
                     <button id="cart-button" class="bg-blue-600 text-white rounded-full p-3 hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -63,14 +58,10 @@
         </div>
     </header>
 
-    <!-- Main Content Containers -->
     <div id="app-container" class="container mx-auto p-8 max-w-7xl flex-grow w-full">
-        <!-- Products View -->
         <div id="products-view" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <!-- Product cards will be dynamically inserted here -->
-        </div>
+            </div>
 
-        <!-- Order History View -->
         <div id="orders-view" class="hidden">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">My Order History</h2>
             <div id="orders-list" class="space-y-4">
@@ -78,7 +69,6 @@
             </div>
         </div>
 
-        <!-- Checkout Form Modal -->
         <div id="checkout-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 relative">
                 <h2 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Checkout Details</h2>
@@ -111,7 +101,6 @@
                         <label for="checkout-address" class="block text-gray-700 text-sm font-bold mb-2">Shipping Address:</label>
                         <textarea id="checkout-address" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                     </div>
-                    <!-- New fields for Country and State -->
                     <div class="mb-4">
                         <label for="checkout-country" class="block text-gray-700 text-sm font-bold mb-2">Country:</label>
                         <input type="text" id="checkout-country" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -130,7 +119,6 @@
         </div>
     </div>
 
-    <!-- Cart Modal (initially hidden) -->
     <div id="cart-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 relative">
             <h2 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Your Cart</h2>
@@ -154,7 +142,6 @@
         </div>
     </div>
 
-    <!-- Message Modal for showing full Order ID -->
     <div id="message-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative">
             <h3 class="text-xl font-bold mb-4 text-gray-800">Full Order ID</h3>
@@ -166,8 +153,17 @@
             </div>
         </div>
     </div>
+    
+    <div id="add-to-cart-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative text-center">
+            <h3 class="text-2xl font-bold mb-4 text-gray-800">Item Added to Cart!</h3>
+            <p id="added-item-name" class="text-lg text-gray-700 mb-6 font-semibold"></p>
+            <button id="acknowledge-button" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+                Acknowledge
+            </button>
+        </div>
+    </div>
 
-    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
@@ -177,12 +173,12 @@
         // You can find this in your Firebase Console under Project Settings.
         // It should be a JSON object like this:
         // const firebaseConfig = {
-        //   apiKey: "...",
-        //   authDomain: "...",
-        //   projectId: "...",
-        //   storageBucket: "...",
-        //   messagingSenderId: "...",
-        //   appId: "..."
+        //    apiKey: "...",
+        //    authDomain: "...",
+        //    projectId: "...",
+        //    storageBucket: "...",
+        //    messagingSenderId: "...",
+        //    appId: "..."
         // };
         const firebaseConfig = {
             apiKey: "AIzaSyBZHcWkwB2bff5beuh1J50NI-9WeYvhcIg",
@@ -242,6 +238,11 @@
         const messageContent = document.getElementById('message-content');
         const closeMessageModal = document.getElementById('close-message-modal');
 
+        // ADDED: New UI elements for the add-to-cart confirmation modal
+        const addToCartModal = document.getElementById('add-to-cart-modal');
+        const addedItemName = document.getElementById('added-item-name');
+        const acknowledgeButton = document.getElementById('acknowledge-button');
+
         // --- Discord Webhook Configuration ---
         // Replace with your own Discord webhook URL if you want order notifications
         const DISCORD_WEBHOOK_URL = 'https://discordapp.com/api/webhooks/1403855383193456681/6_48vuqKdyd18SOwerezdW-ycG-ZenwQNHwfO_q6vHcrzVCyfWKXCjkgAbX4b4mlRTDb';
@@ -274,8 +275,17 @@
             } else {
                 cart.push({ ...product, quantity: 1 });
             }
+            
+            // ADDED: Show the pop-up with the item name
+            addedItemName.textContent = product.name;
+            addToCartModal.classList.remove('hidden');
 
             updateCartBadge();
+        }
+
+        // UPDATED: Function to close the new add-to-cart modal
+        function closeAddToCartModal() {
+            addToCartModal.classList.add('hidden');
         }
 
         // Updates the quantity of an item in the cart
@@ -475,7 +485,6 @@
                     orderEl.className = 'bg-white rounded-lg shadow-md p-4';
                     orderEl.innerHTML = `
                         <div class="flex justify-between items-center mb-2">
-                            <!-- The order ID is now a clickable link to show the full ID -->
                             <button onclick="showMessageModal('Full Order ID: ${order.id}')" class="text-xl font-bold text-gray-800 cursor-pointer hover:underline">
                                 Order ID: ${order.id.slice(0, 8)}...
                             </button>
@@ -574,6 +583,9 @@
                 profileDropdown.classList.toggle('hidden');
             });
             closeMessageModal.addEventListener('click', closeMessageModal);
+            
+            // ADDED: Event listener for the new "Acknowledge" button
+            acknowledgeButton.addEventListener('click', closeAddToCartModal);
 
             // Show products view by default
             showView('products-view');
@@ -582,4 +594,3 @@
     </script>
 </body>
 </html>
-
