@@ -319,6 +319,7 @@
         let db, auth, userId;
         const app_id = "will-s-precision-layer-prints"; // Using the projectId as a unique app identifier
         let products = []; // Products will now be fetched from Firestore
+        let allOrders = []; // New global array to store all orders for the admin panel
         
         // Hardcoded admin UID for demonstration purposes
         // *** IMPORTANT: Replace this with your own Google account UID from Firebase Auth for a real app. ***
@@ -810,7 +811,8 @@
 
         // Shows the admin order details modal
         window.showAdminOrderDetailsModal = function(orderId) {
-            const order = products.find(p => p.id === orderId);
+            // FIX: This was incorrectly searching the 'products' array. Now it correctly searches the 'allOrders' array.
+            const order = allOrders.find(o => o.id === orderId);
             if (!order) {
                 console.error('Order not found:', orderId);
                 return;
@@ -948,11 +950,11 @@
             // Listen for changes to the public all orders collection (for admin view)
             const allOrdersCollection = collection(db, 'artifacts', app_id, 'public', 'data', 'all_orders');
             onSnapshot(allOrdersCollection, (snapshot) => {
-                const orders = [];
+                allOrders = []; // Update the global allOrders array
                 snapshot.forEach(doc => {
-                    orders.push({ id: doc.id, ...doc.data() });
+                    allOrders.push({ id: doc.id, ...doc.data() });
                 });
-                renderAllOrders(orders.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds));
+                renderAllOrders(allOrders.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds));
             });
 
             onAuthStateChanged(auth, (user) => {
