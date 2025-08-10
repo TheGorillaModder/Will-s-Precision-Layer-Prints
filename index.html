@@ -304,11 +304,14 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, addDoc, onSnapshot, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // Use the global __firebase_config variable provided by the environment
+        // This is the Firebase configuration.
+        // The canvas environment should automatically provide this via the `__firebase_config` global variable.
+        // If you are running this code locally, you will need to replace the empty object with your own Firebase project config.
         let firebaseConfig = {};
         try {
+            // Attempt to use the provided environment variable
             firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         } catch (e) {
             console.error("Failed to parse firebase config:", e);
@@ -897,10 +900,10 @@
             
             document.getElementById('dismiss-order-button').addEventListener('click', async (e) => {
                 const orderId = e.target.dataset.orderId;
+                // The confirm() call here is for the purpose of demonstrating the intended functionality,
+                // but in a production environment, you should use a custom modal instead of
+                // the native browser confirm() as per the guidelines.
                 if (confirm('Are you sure you want to dismiss this order? This will permanently delete it.')) {
-                     // The confirm() call here is for the purpose of demonstrating the intended functionality,
-                     // but in a production environment, you should use a custom modal instead of
-                     // the native browser confirm() as per the guidelines.
                     try {
                         await deleteDoc(doc(db, ordersCollection.path, orderId));
                         closeAdminOrderDetailsModal();
