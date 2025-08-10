@@ -303,16 +303,19 @@
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        const firebaseConfig = JSON.parse('{"projectId":"wplp-store-12345"}'); // Replace with your Firebase config
+        // Use the global __firebase_config variable provided by the environment
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
         
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
 
         let productsCollection;
         let ordersCollection;
@@ -384,6 +387,7 @@
         const adminOrderDetailsModal = document.getElementById('admin-order-details-modal');
         const closeAdminOrderDetailsModalBtn = document.getElementById('close-admin-order-details-modal');
         const adminOrderDetailsContent = document.getElementById('admin-order-details-content');
+        const orderDismissButton = document.getElementById('dismiss-order-button');
 
         let cart = {};
 
@@ -559,7 +563,8 @@
             }
             products.forEach(product => {
                 const productCard = document.createElement('div');
-                productCard.className = 'bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden cursor-pointer';
+                productCard.className = 'bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden cursor-pointer product-card';
+                productCard.dataset.name = product.name;
                 productCard.onclick = () => renderProductDetail(product);
                 
                 const firstPrice = Object.values(product.prices)[0] || 0;
@@ -837,9 +842,9 @@
 
             allOrdersList.querySelectorAll('.order-status-dropdown').forEach(select => {
                 select.addEventListener('change', async (e) => {
-                    const orderId = e.target.dataset.order-id;
+                    const orderDocId = e.target.dataset.orderId;
                     const newStatus = e.target.value;
-                    await updateOrderStatus(orderId, newStatus);
+                    await updateOrderStatus(orderDocId, newStatus);
                 });
             });
         }
@@ -945,11 +950,23 @@
                 showMessageModal("Failed to sign out. Please try again.", false, true);
             }
         }
-
-        // Initialize Firestore with specific user authentication
+        
         async function initializeFirestoreAndAuth() {
             productsCollection = collection(db, 'artifacts', appId, 'public', 'data', 'products');
             ordersCollection = collection(db, 'artifacts', appId, 'public', 'data', 'orders');
+
+            // Handle initial custom auth token sign-in
+            if (initialAuthToken) {
+                try {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } catch (error) {
+                    console.error("Error signing in with custom token:", error);
+                    // Fallback to anonymous sign-in if custom token fails
+                    await signInAnonymously(auth);
+                }
+            } else {
+                await signInAnonymously(auth);
+            }
 
             // Listen for auth state changes
             onAuthStateChanged(auth, async (user) => {
@@ -957,7 +974,7 @@
                     userId = user.uid;
                     authButtons.classList.add('hidden');
                     userProfileMenu.classList.remove('hidden');
-                    userName.textContent = user.displayName;
+                    userName.textContent = user.displayName || 'User';
                     userAvatar.src = user.photoURL || 'https://placehold.co/32x32/cccccc/ffffff?text=U';
 
                     // Check if user is admin
@@ -966,7 +983,6 @@
                     isAdmin = adminDoc.exists();
                     adminButton.classList.toggle('hidden', !isAdmin);
 
-                    // If not signed in, sign in anonymously for cart functionality
                 } else {
                     userId = null;
                     isAdmin = false;
@@ -974,12 +990,7 @@
                     userProfileMenu.classList.add('hidden');
                     adminButton.classList.add('hidden');
                     
-                    try {
-                        await signInAnonymously(auth);
-                        userId = auth.currentUser.uid;
-                    } catch (error) {
-                        console.error("Error signing in anonymously:", error);
-                    }
+                    // Anonymous user is already signed in at the start, so we don't need to do it again here.
                 }
             });
 
@@ -993,7 +1004,7 @@
             
             let foundProducts = false;
             productCards.forEach(card => {
-                const productName = card.dataset.productName.toLowerCase();
+                const productName = card.dataset.name.toLowerCase();
                 if (productName.includes(searchTerm)) {
                     card.classList.remove('hidden');
                     foundProducts = true;
