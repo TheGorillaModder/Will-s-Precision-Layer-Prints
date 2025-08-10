@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Will's Precision Layer Prints</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,7 +12,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #9ca3af;
         }
         .modal-bg {
             background-color: rgba(0, 0, 0, 0.5);
@@ -25,15 +26,21 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center">
+<body class="bg-gray-500 min-h-screen flex flex-col items-center">
 
+    <!-- Header -->
     <header class="w-full bg-black text-white shadow-md p-4 sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center max-w-7xl">
+            <!-- Logo now performs a full page refresh -->
             <button onclick="window.location.reload()" class="flex items-center space-x-2 text-2xl font-bold text-gray-200 cursor-pointer hover:text-red-500 transition-colors duration-200">
                 <img src="wplp.png" alt="WPLP Logo" class="h-8"> 
                 <span>Will's Precision Layer Prints</span>
             </button>
             <div class="flex items-center space-x-4">
+                <!-- Admin button (visible only to admin user) -->
+                <button id="admin-button" class="hidden bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-blue-700 transition duration-300">Admin</button>
+
+                <!-- User Profile/Login Button -->
                 <div id="auth-buttons" class="flex items-center space-x-2 hidden">
                     <button id="login-button" class="bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-red-700 transition duration-300">Sign in with Google</button>
                 </div>
@@ -47,6 +54,7 @@
                         <a href="#" id="signout-link" class="block px-4 py-2 text-red-500 hover:bg-gray-100 border-t">Sign Out</a>
                     </div>
                 </div>
+                <!-- Cart Button -->
                 <div class="relative">
                     <button id="cart-button" class="bg-red-600 text-white rounded-full p-3 hover:bg-red-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -59,28 +67,97 @@
         </div>
     </header>
 
+    <!-- Main Content Containers -->
     <div id="app-container" class="container mx-auto p-8 max-w-7xl flex-grow w-full">
+        <!-- Products View -->
         <div id="products-view" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            </div>
-
-        <div id="product-detail-view" class="hidden">
-            <button onclick="showView('products-view')" class="mb-6 flex items-center text-gray-600 hover:text-black transition-colors duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            <!-- Product cards will be dynamically inserted here -->
+            <div id="products-loading" class="col-span-full flex justify-center items-center py-12">
+                <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Back to Products
-            </button>
-            <div id="product-detail-content" class="bg-white rounded-lg shadow-xl p-8 flex flex-col md:flex-row gap-8">
-                </div>
+                <span class="text-xl font-semibold text-gray-800">Loading products...</span>
+            </div>
         </div>
 
-        <div id="orders-view" class="hidden">
+        <!-- Product Detail View -->
+        <div id="product-detail-view" class="hidden relative">
+            <button onclick="window.showView('products-view')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200 z-10 p-2 rounded-full bg-white bg-opacity-70">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div id="product-detail-content" class="bg-white rounded-lg shadow-xl p-8 flex flex-col md:flex-row gap-8">
+                <!-- Product details will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Order History View -->
+        <div id="orders-view" class="hidden relative">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">My Order History</h2>
+            <button onclick="window.showView('products-view')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200 p-2 rounded-full bg-white bg-opacity-70">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
             <div id="orders-list" class="space-y-4">
                 <p id="empty-orders-message" class="text-gray-500 text-center py-4">You have no past orders.</p>
             </div>
         </div>
 
+        <!-- Admin View -->
+        <div id="admin-view" class="hidden relative">
+            <h2 class="text-3xl font-bold mb-6 text-gray-800">Admin Dashboard</h2>
+            <button onclick="window.showView('products-view')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200 p-2 rounded-full bg-white bg-opacity-70">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="space-y-8">
+                <!-- Add Product Form -->
+                <div class="bg-white rounded-lg shadow-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Add a New Product</h3>
+                    <form id="add-product-form" class="space-y-4">
+                        <div>
+                            <label for="product-name" class="block text-gray-700 font-semibold mb-1">Product Name</label>
+                            <input type="text" id="product-name" required class="w-full p-2 border rounded-md">
+                        </div>
+                        <div>
+                            <label for="product-description" class="block text-gray-700 font-semibold mb-1">Description</label>
+                            <textarea id="product-description" required class="w-full p-2 border rounded-md"></textarea>
+                        </div>
+                        <div>
+                            <label for="product-image" class="block text-gray-700 font-semibold mb-1">Image URL</label>
+                            <input type="url" id="product-image" required class="w-full p-2 border rounded-md">
+                        </div>
+                        <div>
+                            <label for="product-colors" class="block text-gray-700 font-semibold mb-1">Colors (comma separated)</label>
+                            <input type="text" id="product-colors" required class="w-full p-2 border rounded-md">
+                        </div>
+                        <div>
+                            <label for="product-sizes" class="block text-gray-700 font-semibold mb-1">Sizes (comma separated)</label>
+                            <input type="text" id="product-sizes" required class="w-full p-2 border rounded-md">
+                        </div>
+                        <div>
+                            <label for="product-prices" class="block text-gray-700 font-semibold mb-1">Prices (JSON format)</label>
+                            <textarea id="product-prices" required class="w-full p-2 border rounded-md" placeholder='{"Small": 5.00, "Medium": 11.00, "Large": 20.00}'></textarea>
+                            <p class="text-sm text-gray-500 mt-1">Example: `{"Small": 5.00, "Large": 20.00}`</p>
+                        </div>
+                        <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 w-full">Add Product</button>
+                    </form>
+                </div>
+                <!-- Orders List -->
+                <div class="bg-white rounded-lg shadow-xl p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">All Orders</h3>
+                    <div id="all-orders-list" class="space-y-4">
+                        <p class="text-gray-500 text-center py-4">No orders yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checkout Form Modal -->
         <div id="checkout-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 relative">
                 <h2 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Checkout Details</h2>
@@ -102,6 +179,7 @@
                         <label for="checkout-address" class="block text-gray-700 text-sm font-bold mb-2">Shipping Address:</label>
                         <textarea id="checkout-address" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
                     </div>
+                    <!-- New fields for Country and State -->
                     <div class="mb-4">
                         <label for="checkout-country" class="block text-gray-700 text-sm font-bold mb-2">Country:</label>
                         <input type="text" id="checkout-country" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-red-500">
@@ -118,69 +196,77 @@
                 </form>
             </div>
         </div>
-    </div>
 
-    <div id="cart-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 relative">
-            <h2 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Your Cart</h2>
-            <button id="close-modal-button" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-            <div id="cart-items" class="max-h-96 overflow-y-auto mb-6">
-                <p id="empty-cart-message" class="text-gray-500 text-center py-4">Your cart is empty.</p>
-            </div>
-            <div id="cart-summary" class="border-t pt-4">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-lg font-semibold text-gray-800">Total:</span>
-                    <span id="cart-total" class="text-2xl font-bold text-gray-900">$0.00</span>
+        <!-- Cart Modal (initially hidden) -->
+        <div id="cart-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 relative">
+                <h2 class="text-3xl font-bold mb-6 text-gray-800 border-b pb-4">Your Cart</h2>
+                <button id="close-modal-button" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <div id="cart-items" class="max-h-96 overflow-y-auto mb-6">
+                    <p id="empty-cart-message" class="text-gray-500 text-center py-4">Your cart is empty.</p>
                 </div>
-                <button id="checkout-button" class="w-full bg-red-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-red-600 transition duration-300 disabled:bg-gray-400" disabled>
-                    Proceed to Checkout
+                <div id="cart-summary" class="border-t pt-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-lg font-semibold text-gray-800">Total:</span>
+                        <span id="cart-total" class="text-2xl font-bold text-gray-900">$0.00</span>
+                    </div>
+                    <button id="checkout-button" class="w-full bg-red-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-red-600 transition duration-300 disabled:bg-gray-400" disabled>
+                        Proceed to Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message Modal for showing full Order ID -->
+        <div id="message-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative">
+                <h3 class="text-xl font-bold mb-4 text-gray-800">Full Order ID</h3>
+                <p id="message-content" class="break-all text-gray-700"></p>
+                <div class="mt-6 text-right">
+                    <button id="close-message-modal" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition duration-300">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pop-up for "Add to Cart" confirmation -->
+        <div id="add-to-cart-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative text-center">
+                <h3 class="text-2xl font-bold mb-4 text-gray-800">Item Added to Cart!</h3>
+                <p id="added-item-name" class="text-lg text-gray-700 mb-6 font-semibold"></p>
+                <button id="acknowledge-button" class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:bg-red-700 transition duration-300">
+                    Acknowledge
                 </button>
+            </div>
+        </div>
+
+        <!-- Modal for selecting product options -->
+        <div id="options-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative">
+                <button id="close-options-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <div id="options-modal-content">
+                    <!-- Product details and options will be dynamically inserted here -->
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="message-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative">
-            <h3 class="text-xl font-bold mb-4 text-gray-800">Full Order ID</h3>
-            <p id="message-content" class="break-all text-gray-700"></p>
-            <div class="mt-6 text-right">
-                <button id="close-message-modal" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition duration-300">
-                    Close
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="add-to-cart-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 relative text-center">
-            <h3 class="text-2xl font-bold mb-4 text-gray-800">Item Added to Cart!</h3>
-            <p id="added-item-name" class="text-lg text-gray-700 mb-6 font-semibold"></p>
-            <button id="acknowledge-button" class="bg-red-600 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:bg-red-700 transition duration-300">
-                Acknowledge
-            </button>
-        </div>
-    </div>
-
+    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
         // --- IMPORTANT: Paste your Firebase config here ---
-        // You can find this in your Firebase Console under Project Settings.
-        // It should be a JSON object like this:
-        // const firebaseConfig = {
-        //    apiKey: "...",
-        //    authDomain: "...",
-        //    projectId: "...",
-        //    storageBucket: "...",
-        //    messagingSenderId: "...",
-        //    appId: "..."
-        // };
         const firebaseConfig = {
             apiKey: "AIzaSyBZHcWkwB2bff5beuh1J50NI-9WeYvhcIg",
             authDomain: "will-s-precision-layer-prints.firebaseapp.com",
@@ -196,18 +282,11 @@
         let cart = [];
         let db, auth, userId;
         const app_id = "will-s-precision-layer-prints"; // Using the projectId as a unique app identifier
-
-        // UPDATED: Data for our products with more details
-        const products = [
-            { id: 1, name: 'Vintage Camera', price: 125.00, image: 'https://placehold.co/400x300/60a5fa/ffffff?text=Camera', description: 'A beautifully crafted vintage camera print with intricate details.', color: 'Black and white', size: '8x10 inches' },
-            { id: 2, name: 'Leather Journal', price: 22.50, image: 'https://placehold.co/400x300/4ade80/ffffff?text=Journal', description: 'A realistic print of a classic leather journal, perfect for a study.', color: 'Brown tones', size: 'A4' },
-            { id: 3, name: 'Ceramic Mug', price: 15.00, image: 'https://placehold.co/400x300/f87171/ffffff?text=Mug', description: 'A stunning layered print of a simple ceramic mug with a delicate handle.', color: 'White and gray', size: '12x12 inches' },
-            { id: 4, name: 'Hand-woven Scarf', price: 55.00, image: 'https://placehold.co/400x300/c084fc/ffffff?text=Scarf', description: 'A detailed print showcasing the texture of a hand-woven scarf.', color: 'Gray and red', size: '11x14 inches' },
-            { id: 5, name: 'Espresso Machine', price: 349.99, image: 'https://placehold.co/400x300/f9a8d4/ffffff?text=Espresso', description: 'A complex, multi-layered print of an espresso machine with all its parts visible.', color: 'Metallic gray', size: '16x20 inches' },
-            { id: 6, name: 'Vinyl Record', price: 30.00, image: 'https://placehold.co/400x300/4b5563/ffffff?text=Vinyl', description: 'A nostalgic print of a vinyl record and player, capturing the essence of music.', color: 'Black with silver highlights', size: 'A3' },
-            { id: 7, name: 'Mechanical Keyboard', price: 150.00, image: 'https://placehold.co/400x300/fcd34d/ffffff?text=Keyboard', description: 'A precise layered print of a mechanical keyboard, a must-have for tech enthusiasts.', color: 'Black and red keys', size: '8x24 inches' },
-            { id: 8, name: 'Acoustic Guitar', price: 450.00, image: 'https://placehold.co/400x300/6ee7b7/ffffff?text=Guitar', description: 'An elegant print of an acoustic guitar, highlighting the wood grain and strings.', color: 'Natural wood tones', size: '20x30 inches' }
-        ];
+        let products = []; // Products will now be fetched from Firestore
+        
+        // Hardcoded admin UID for demonstration purposes
+        // *** IMPORTANT: Replace this with your own Google account UID from Firebase Auth for a real app. ***
+        const ADMIN_UID = "Yh0oVlT8OqaO1Lw6y8oT8s8H9y62"; 
 
         // UI elements
         const productsContainer = document.getElementById('products-view');
@@ -233,52 +312,67 @@
         const viewOrdersLink = document.getElementById('view-orders-link');
         const signoutLink = document.getElementById('signout-link');
         const loginButton = document.getElementById('login-button');
+        const adminButton = document.getElementById('admin-button');
 
-        // New UI elements for the message modal
         const messageModal = document.getElementById('message-modal');
         const messageContent = document.getElementById('message-content');
         const closeMessageModal = document.getElementById('close-message-modal');
 
-        // NEW: UI elements for the add-to-cart confirmation modal
         const addToCartModal = document.getElementById('add-to-cart-modal');
         const addedItemName = document.getElementById('added-item-name');
         const acknowledgeButton = document.getElementById('acknowledge-button');
 
-        // NEW: UI elements for the product detail page
         const productDetailView = document.getElementById('product-detail-view');
         const productDetailContent = document.getElementById('product-detail-content');
 
+        const optionsModal = document.getElementById('options-modal');
+        const optionsModalContent = document.getElementById('options-modal-content');
+
+        // Admin view elements
+        const adminView = document.getElementById('admin-view');
+        const addProductForm = document.getElementById('add-product-form');
+        const allOrdersList = document.getElementById('all-orders-list');
+
         // --- Discord Webhook Configuration ---
-        // Replace with your own Discord webhook URL if you want order notifications
         const DISCORD_WEBHOOK_URL = 'https://discordapp.com/api/webhooks/1403855383193456681/6_48vuqKdyd18SOwerezdW-ycG-ZenwQNHwfO_q6vHcrzVCyfWKXCjkgAbX4b4mlRTDb';
 
         // Renders all product cards on the page
         function renderProducts() {
             productsContainer.innerHTML = '';
-            products.forEach(product => {
-                const productCard = document.createElement('div');
-                productCard.className = 'bg-white rounded-lg shadow-xl p-6 flex flex-col items-center transition-transform transform hover:scale-105 duration-300';
-                productCard.innerHTML = `
-                    <div class="cursor-pointer" onclick="showProductDetail(${product.id})">
-                        <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover rounded-lg mb-4">
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 text-center mb-2">${product.name}</h3>
-                    <p class="text-lg text-gray-600 font-medium mb-4">$${product.price.toFixed(2)}</p>
-                    <button onclick="addToCartFromMain(${product.id})" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-300 w-full">
-                        Add to Cart
-                    </button>
-                `;
-                productsContainer.appendChild(productCard);
-            });
+            if (products.length === 0) {
+                productsContainer.innerHTML = `<div class="col-span-full text-center text-xl text-gray-500 py-12">No products available.</div>`;
+            } else {
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'bg-white rounded-lg shadow-xl p-6 flex flex-col items-center transition-transform transform hover:scale-105 duration-300';
+                    
+                    const startingPrice = Math.min(...Object.values(product.prices));
+
+                    productCard.innerHTML = `
+                        <div class="cursor-pointer" onclick="window.showProductDetail('${product.id}')">
+                            <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover rounded-lg mb-4" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=Image+Missing';">
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 text-center mb-2">${product.name}</h3>
+                        <p class="text-lg text-gray-600 font-medium mb-4">From $${startingPrice.toFixed(2)}</p>
+                        <button onclick="window.showOptionsModal('${product.id}')" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-300 w-full">
+                            Add to Cart
+                        </button>
+                    `;
+                    productsContainer.appendChild(productCard);
+                });
+            }
         }
 
-        // NEW: Renders the product detail view
-        function showProductDetail(productId) {
+        // Renders the product detail view
+        window.showProductDetail = function(productId) {
             const product = products.find(p => p.id === productId);
             if (!product) {
                 console.error('Product not found:', productId);
                 return;
             }
+
+            const colorOptions = product.colors.map(color => `<option value="${color}">${color}</option>`).join('');
+            const sizeOptions = product.sizes.map(size => `<option value="${size}">${size}</option>`).join('');
 
             productDetailContent.innerHTML = `
                 <div class="flex-shrink-0 md:w-1/2">
@@ -286,64 +380,127 @@
                 </div>
                 <div class="flex flex-col md:w-1/2">
                     <h2 class="text-4xl font-bold text-gray-800 mb-2">${product.name}</h2>
-                    <p class="text-2xl text-gray-900 font-bold mb-4">$${product.price.toFixed(2)}</p>
+                    <p class="text-2xl text-gray-900 font-bold mb-4">$<span id="product-detail-price">${product.prices[product.sizes[0]].toFixed(2)}</span></p>
                     <p class="text-gray-700 mb-6">${product.description}</p>
-                    <div class="mb-6 space-y-2">
-                        <p class="text-gray-600"><span class="font-semibold">Color:</span> ${product.color}</p>
-                        <p class="text-gray-600"><span class="font-semibold">Size:</span> ${product.size}</p>
+                    <div class="mb-6 space-y-4">
+                        <div>
+                            <label for="detail-color-select" class="block text-gray-700 font-semibold mb-2">Color:</label>
+                            <select id="detail-color-select" class="w-full p-2 border rounded-md">
+                                ${colorOptions}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="detail-size-select" class="block text-gray-700 font-semibold mb-2">Size:</label>
+                            <select id="detail-size-select" class="w-full p-2 border rounded-md">
+                                ${sizeOptions}
+                            </select>
+                        </div>
                     </div>
-                    <button onclick="addToCart(${product.id})" class="bg-red-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-red-700 transition duration-300 w-full md:w-auto">
+                    <button id="detail-add-to-cart" class="bg-red-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-red-700 transition duration-300 w-full md:w-auto">
                         Add to Cart
                     </button>
                 </div>
             `;
-            showView('product-detail-view');
-        }
-
-        // UPDATED: Function to add a product to the cart (now from the detail page)
-        window.addToCart = function(productId) {
-            const product = products.find(p => p.id === productId);
-            const cartItem = cart.find(item => item.id === productId);
-
-            if (cartItem) {
-                cartItem.quantity++;
-            } else {
-                cart.push({ ...product, quantity: 1 });
-            }
+            window.showView('product-detail-view');
             
-            // Show the pop-up with the item name
-            addedItemName.textContent = product.name;
-            addToCartModal.classList.remove('hidden');
+            const sizeSelect = document.getElementById('detail-size-select');
+            const priceSpan = document.getElementById('product-detail-price');
+            sizeSelect.addEventListener('change', () => {
+                const selectedSize = sizeSelect.value;
+                priceSpan.textContent = product.prices[selectedSize].toFixed(2);
+            });
 
-            updateCartBadge();
+            document.getElementById('detail-add-to-cart').addEventListener('click', () => {
+                const selectedColor = document.getElementById('detail-color-select').value;
+                const selectedSize = document.getElementById('detail-size-select').value;
+                window.addToCartWithOptions(product.id, selectedColor, selectedSize, product.prices[selectedSize]);
+            });
         }
 
-        // NEW: Separate function for Add to Cart button on the main page to maintain the same popup logic
-        window.addToCartFromMain = function(productId) {
+        // Shows the modal for selecting options from the main product view
+        window.showOptionsModal = function(productId) {
             const product = products.find(p => p.id === productId);
-            const cartItem = cart.find(item => item.id === productId);
+            if (!product) return;
+
+            const colorOptions = product.colors.map(color => `<option value="${color}">${color}</option>`).join('');
+            const sizeOptions = product.sizes.map(size => `<option value="${size}">${size}</option>`).join('');
+
+            optionsModalContent.innerHTML = `
+                <h3 class="text-2xl font-bold mb-4 text-gray-800">${product.name}</h3>
+                <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover rounded-lg mb-4">
+                <p class="text-lg text-gray-900 font-bold mb-4">$<span id="options-price">${product.prices[product.sizes[0]].toFixed(2)}</span></p>
+                <div class="mb-4 space-y-4">
+                    <div>
+                        <label for="options-color-select" class="block text-gray-700 font-semibold mb-2">Color:</label>
+                        <select id="options-color-select" class="w-full p-2 border rounded-md">
+                            ${colorOptions}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="options-size-select" class="block text-gray-700 font-semibold mb-2">Size:</label>
+                        <select id="options-size-select" class="w-full p-2 border rounded-md">
+                            ${sizeOptions}
+                        </select>
+                    </div>
+                </div>
+                <button id="options-add-to-cart" class="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-red-700 transition duration-300">
+                    Confirm Add to Cart
+                </button>
+            `;
+            optionsModal.classList.remove('hidden');
+
+            const sizeSelect = document.getElementById('options-size-select');
+            const priceSpan = document.getElementById('options-price');
+            sizeSelect.addEventListener('change', () => {
+                const selectedSize = sizeSelect.value;
+                priceSpan.textContent = product.prices[selectedSize].toFixed(2);
+            });
+
+            document.getElementById('options-add-to-cart').addEventListener('click', () => {
+                const selectedColor = document.getElementById('options-color-select').value;
+                const selectedSize = document.getElementById('options-size-select').value;
+                const selectedPrice = product.prices[selectedSize];
+                window.addToCartWithOptions(product.id, selectedColor, selectedSize, selectedPrice);
+            });
+        }
+        
+        // Closes the options modal
+        window.closeOptionsModal = function() {
+            optionsModal.classList.add('hidden');
+        }
+
+        // Handles adding to cart with selected options
+        window.addToCartWithOptions = function(productId, selectedColor, selectedSize, selectedPrice) {
+            const product = products.find(p => p.id === productId);
+            
+            const cartItem = cart.find(item => item.id === productId && item.selectedColor === selectedColor && item.selectedSize === selectedSize);
+
             if (cartItem) {
                 cartItem.quantity++;
             } else {
-                cart.push({ ...product, quantity: 1 });
+                cart.push({ ...product, price: selectedPrice, quantity: 1, selectedColor, selectedSize });
             }
-            addedItemName.textContent = product.name;
+
+            window.closeOptionsModal();
+            
+            addedItemName.textContent = `${selectedSize} ${selectedColor} ${product.name} added to cart!`;
             addToCartModal.classList.remove('hidden');
+
             updateCartBadge();
         }
 
-        // UPDATED: Function to close the new add-to-cart modal
-        function closeAddToCartModal() {
+        // Function to close the new add-to-cart confirmation modal
+        window.closeAddToCartModal = function() {
             addToCartModal.classList.add('hidden');
         }
 
         // Updates the quantity of an item in the cart
-        window.updateQuantity = function(productId, change) {
-            const cartItem = cart.find(item => item.id === productId);
+        window.updateQuantity = function(productId, color, size, change) {
+            const cartItem = cart.find(item => item.id === productId && item.selectedColor === color && item.selectedSize === size);
             if (cartItem) {
                 cartItem.quantity += change;
                 if (cartItem.quantity <= 0) {
-                    cart = cart.filter(item => item.id !== productId);
+                    cart = cart.filter(item => !(item.id === productId && item.selectedColor === color && item.selectedSize === size));
                 }
             }
 
@@ -373,14 +530,15 @@
                             <div>
                                 <h4 class="font-semibold text-gray-800">${item.name}</h4>
                                 <p class="text-sm text-gray-500">$${item.price.toFixed(2)} each</p>
+                                <p class="text-xs text-gray-400">Color: ${item.selectedColor}, Size: ${item.selectedSize}</p>
                             </div>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <button onclick="updateQuantity(${item.id}, -1)" class="bg-gray-200 text-gray-700 rounded-md p-1 hover:bg-gray-300 transition-colors duration-200">
+                            <button onclick="window.updateQuantity('${item.id}', '${item.selectedColor}', '${item.selectedSize}', -1)" class="bg-gray-200 text-gray-700 rounded-md p-1 hover:bg-gray-300 transition-colors duration-200">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" /></svg>
                             </button>
                             <span class="font-bold text-gray-800 w-6 text-center">${item.quantity}</span>
-                            <button onclick="updateQuantity(${item.id}, 1)" class="bg-gray-200 text-gray-700 rounded-md p-1 hover:bg-gray-300 transition-colors duration-200">
+                            <button onclick="window.updateQuantity('${item.id}', '${item.selectedColor}', '${item.selectedSize}', 1)" class="bg-gray-200 text-gray-700 rounded-md p-1 hover:bg-gray-300 transition-colors duration-200">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
                             </button>
                         </div>
@@ -417,8 +575,7 @@
         // Opens the checkout form modal
         function openCheckoutModal() {
             if (cart.length === 0) {
-                // Using a custom modal/message box instead of alert()
-                showMessageModal('Your cart is empty.');
+                window.showMessageModal('Your cart is empty.');
                 return;
             }
             closeCartModal();
@@ -431,7 +588,7 @@
         }
 
         // Shows a custom message modal
-        function showMessageModal(message) {
+        window.showMessageModal = function(message) {
             messageContent.textContent = message;
             messageModal.classList.remove('hidden');
         }
@@ -446,7 +603,7 @@
             event.preventDefault();
 
             if (!userId) {
-                showMessageModal('Please sign in to place an order.');
+                window.showMessageModal('Please sign in to place an order.');
                 return;
             }
 
@@ -456,18 +613,17 @@
             const country = document.getElementById('checkout-country').value;
             const state = document.getElementById('checkout-state').value;
 
-            // Simple validation
             if (!name || !email || !address || !country) {
-                showMessageModal('Please fill out all required fields.');
+                window.showMessageModal('Please fill out all required fields.');
                 return;
             }
 
             const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-            // Create a document in Firestore
-            const ordersCollection = collection(db, 'artifacts', app_id, 'users', userId, 'orders');
-            const newOrderRef = await addDoc(ordersCollection, {
-                items: cart,
+            // Save order to the user's private collection
+            const userOrdersCollection = collection(db, 'artifacts', app_id, 'users', userId, 'orders');
+            const newOrderRef = await addDoc(userOrdersCollection, {
+                items: cart.map(item => ({...item, colors: undefined, sizes: undefined})),
                 total: total,
                 name: name,
                 email: email,
@@ -478,10 +634,26 @@
                 timestamp: serverTimestamp()
             });
 
-            // Prepare payload for Discord webhook
+            // For the admin panel to view all orders, we'll also save it to a public collection.
+            // In a production app, a cloud function would be used for this.
+            // This is a simplified approach for this demo.
+            const allOrdersCollection = collection(db, 'artifacts', app_id, 'public', 'data', 'all_orders');
+            await setDoc(doc(allOrdersCollection, newOrderRef.id), {
+                userId: userId,
+                items: cart.map(item => ({...item, colors: undefined, sizes: undefined})),
+                total: total,
+                name: name,
+                email: email,
+                address: address,
+                country: country,
+                state: state,
+                status: 'Processing',
+                timestamp: serverTimestamp()
+            });
+
             const orderId = newOrderRef.id;
             const messageContent = cart.map(item =>
-                `**${item.name}** x${item.quantity} ($${(item.price * item.quantity).toFixed(2)})`
+                `**${item.name}** (${item.selectedSize} ${item.selectedColor}) x${item.quantity} ($${(item.price * item.quantity).toFixed(2)})`
             ).join('\n');
 
             const discordPayload = {
@@ -504,11 +676,10 @@
 
                 if (response.ok) {
                     console.log('Order placed and sent to Discord successfully!');
-                    cart = []; // Clear the cart
+                    cart = [];
                     closeCheckoutModal();
                     updateCartBadge();
-                    // Optionally, navigate to the orders page
-                    showView('orders-view');
+                    window.showView('orders-view');
                 } else {
                     console.error(`Failed to send order to Discord. Status: ${response.status}`);
                 }
@@ -520,8 +691,8 @@
             }
         }
 
-        // Renders the order history
-        function renderOrders(orders) {
+        // Renders the order history for a specific user
+        function renderUserOrders(orders) {
             ordersListContainer.innerHTML = '';
             if (orders.length === 0) {
                 emptyOrdersMessage.classList.remove('hidden');
@@ -534,7 +705,7 @@
                     orderEl.className = 'bg-white rounded-lg shadow-md p-4';
                     orderEl.innerHTML = `
                         <div class="flex justify-between items-center mb-2">
-                            <button onclick="showMessageModal('Full Order ID: ${order.id}')" class="text-xl font-bold text-gray-800 cursor-pointer hover:underline">
+                            <button onclick="window.showMessageModal('Full Order ID: ${order.id}')" class="text-xl font-bold text-gray-800 cursor-pointer hover:underline">
                                 Order ID: ${order.id.slice(0, 8)}...
                             </button>
                             <span class="font-bold text-red-600">$${orderTotal}</span>
@@ -542,7 +713,7 @@
                         <p class="text-sm text-gray-500 mb-2">Order placed on: ${orderDate}</p>
                         <p class="font-bold text-lg text-red-600 mb-2">Status: ${order.status}</p>
                         <ul class="list-disc list-inside text-gray-600 space-y-1">
-                            ${order.items.map(item => `<li>${item.name} x${item.quantity} ($${(item.price * item.quantity).toFixed(2)})</li>`).join('')}
+                            ${order.items.map(item => `<li>${item.name} (${item.selectedSize} ${item.selectedColor}) x${item.quantity} ($${(item.price * item.quantity).toFixed(2)})</li>`).join('')}
                         </ul>
                     `;
                     ordersListContainer.appendChild(orderEl);
@@ -550,9 +721,39 @@
             }
         }
 
-        // Swaps the main view between products, product details, and orders
-        function showView(viewId) {
-            const views = [productsView, ordersView, productDetailView];
+        // Renders all orders for the admin view
+        function renderAllOrders(orders) {
+            allOrdersList.innerHTML = '';
+            if (orders.length === 0) {
+                allOrdersList.innerHTML = `<p class="text-gray-500 text-center py-4">No orders yet.</p>`;
+            } else {
+                orders.forEach(order => {
+                    const orderTotal = order.total.toFixed(2);
+                    const orderDate = order.timestamp ? new Date(order.timestamp.seconds * 1000).toLocaleString() : 'N/A';
+                    const orderEl = document.createElement('div');
+                    orderEl.className = 'bg-white rounded-lg shadow-md p-4';
+                    orderEl.innerHTML = `
+                        <div class="flex justify-between items-center mb-2">
+                            <button onclick="window.showMessageModal('Full Order ID: ${order.id}')" class="text-xl font-bold text-gray-800 cursor-pointer hover:underline">
+                                Order ID: ${order.id.slice(0, 8)}...
+                            </button>
+                            <span class="font-bold text-red-600">$${orderTotal}</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-2">Order placed on: ${orderDate}</p>
+                        <p class="text-sm text-gray-500 mb-2">User: ${order.name} (${order.userId.slice(0, 8)}...)</p>
+                        <p class="font-bold text-lg text-red-600 mb-2">Status: ${order.status}</p>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1">
+                            ${order.items.map(item => `<li>${item.name} (${item.selectedSize} ${item.selectedColor}) x${item.quantity} ($${(item.price * item.quantity).toFixed(2)})</li>`).join('')}
+                        </ul>
+                    `;
+                    allOrdersList.appendChild(orderEl);
+                });
+            }
+        }
+
+        // Swaps the main view between products, product details, orders, and admin panel
+        window.showView = function(viewId) {
+            const views = [productsView, ordersView, productDetailView, adminView];
             views.forEach(view => {
                 if (view.id === viewId) {
                     view.classList.remove('hidden');
@@ -581,13 +782,64 @@
             }
         }
 
+        // Function to add a new product via the admin form
+        async function addProduct(event) {
+            event.preventDefault();
+            const name = document.getElementById('product-name').value;
+            const description = document.getElementById('product-description').value;
+            const image = document.getElementById('product-image').value;
+            const colors = document.getElementById('product-colors').value.split(',').map(s => s.trim());
+            const sizes = document.getElementById('product-sizes').value.split(',').map(s => s.trim());
+            const prices = JSON.parse(document.getElementById('product-prices').value);
+
+            if (!name || !description || !image || colors.length === 0 || sizes.length === 0 || Object.keys(prices).length === 0) {
+                window.showMessageModal('Please fill out all fields.');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, 'artifacts', app_id, 'public', 'data', 'products'), {
+                    name,
+                    description,
+                    image,
+                    colors,
+                    sizes,
+                    prices
+                });
+                addProductForm.reset();
+                window.showMessageModal('Product added successfully!');
+            } catch (error) {
+                console.error('Error adding product:', error);
+                window.showMessageModal('Failed to add product.');
+            }
+        }
+
         // Main entry point
         window.onload = () => {
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
 
-            // Listen for auth state changes
+            // Listen for changes to the public products collection
+            const productsCollection = collection(db, 'artifacts', app_id, 'public', 'data', 'products');
+            onSnapshot(productsCollection, (snapshot) => {
+                products = [];
+                snapshot.forEach(doc => {
+                    products.push({ id: doc.id, ...doc.data() });
+                });
+                renderProducts();
+            });
+
+            // Listen for changes to the public all orders collection (for admin view)
+            const allOrdersCollection = collection(db, 'artifacts', app_id, 'public', 'data', 'all_orders');
+            onSnapshot(allOrdersCollection, (snapshot) => {
+                const orders = [];
+                snapshot.forEach(doc => {
+                    orders.push({ id: doc.id, ...doc.data() });
+                });
+                renderAllOrders(orders.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds));
+            });
+
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     userId = user.uid;
@@ -595,25 +847,29 @@
                     userProfileMenu.classList.remove('hidden');
                     userName.textContent = user.displayName || 'User';
                     userAvatar.src = user.photoURL || `https://placehold.co/32x32/cccccc/ffffff?text=${(user.displayName?.[0] || 'U')}`;
+                    
+                    if (userId === ADMIN_UID) {
+                        adminButton.classList.remove('hidden');
+                    } else {
+                        adminButton.classList.add('hidden');
+                    }
 
-                    // Set up real-time listener for user's orders
                     const ordersCollection = collection(db, 'artifacts', app_id, 'users', userId, 'orders');
                     onSnapshot(ordersCollection, (snapshot) => {
                         const orders = [];
                         snapshot.forEach(doc => {
                             orders.push({ id: doc.id, ...doc.data() });
                         });
-                        renderOrders(orders.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds));
+                        renderUserOrders(orders.sort((a, b) => b.timestamp.seconds - a.timestamp.seconds));
                     });
                 } else {
                     userId = null;
+                    adminButton.classList.add('hidden');
                     authButtons.classList.remove('hidden');
                     userProfileMenu.classList.add('hidden');
-                    showView('products-view'); // Go back to products if signed out
+                    window.showView('products-view');
                 }
             });
-
-            renderProducts();
 
             // Event listeners
             document.getElementById('cart-button').addEventListener('click', openCartModal);
@@ -626,18 +882,21 @@
             viewOrdersLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 profileDropdown.classList.add('hidden');
-                showView('orders-view');
+                window.showView('orders-view');
             });
             userProfileButton.addEventListener('click', () => {
                 profileDropdown.classList.toggle('hidden');
             });
-            closeMessageModal.addEventListener('click', closeMessageModal);
+            closeMessageModal.addEventListener('click', window.closeMessageModal);
             
-            // Event listener for the new "Acknowledge" button
-            acknowledgeButton.addEventListener('click', closeAddToCartModal);
+            acknowledgeButton.addEventListener('click', window.closeAddToCartModal);
+            document.getElementById('close-options-modal').addEventListener('click', window.closeOptionsModal);
 
-            // Show products view by default
-            showView('products-view');
+            // Admin panel events
+            adminButton.addEventListener('click', () => window.showView('admin-view'));
+            addProductForm.addEventListener('submit', addProduct);
+
+            window.showView('products-view');
         };
 
     </script>
