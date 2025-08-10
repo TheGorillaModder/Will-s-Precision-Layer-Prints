@@ -318,13 +318,21 @@
 	  appId: "1:28322806740:web:643d6bd0d857d936f77441",
   	  measurementId: "G-P96D22GYV5"
 	};
+
         try {
-            // Attempt to use the provided environment variable
-            firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        } catch (e) {
-            console.error("Failed to parse firebase config:", e);
-        }
-        
+	    if (typeof __firebase_config !== 'undefined') {
+	        // Only overwrite if __firebase_config is available
+	        firebaseConfig = JSON.parse(__firebase_config);
+	    }
+	} catch (e) {
+	    console.error("Failed to parse firebase config:", e);
+	}
+
+	// Fallback check
+	if (!firebaseConfig.projectId) {
+	    console.error("Firebase configuration is empty or invalid. The app will not function correctly.");
+	}
+
         // Fallback for when no config is provided
         if (Object.keys(firebaseConfig).length === 0) {
             console.error("Firebase configuration is empty or not provided. The app will not function correctly.");
