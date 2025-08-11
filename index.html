@@ -18,32 +18,46 @@
 </head>
 <body class="bg-gray-500 min-h-screen flex flex-col items-center">
 
-    <!-- Header -->
-    <header class="w-full bg-black text-white shadow-md p-4 sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center max-w-7xl">
-            <button id="home-btn" class="flex items-center space-x-2 text-2xl font-bold text-gray-200 cursor-pointer hover:text-red-500 transition-colors duration-200">
-                <img src="wplp.png" alt="WPLP Logo" class="h-8">
-                <span>Will's Precision Layer Prints</span>
-            </button>
-            <div class="flex items-center space-x-4">
-                <button id="admin-button" class="hidden bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-blue-700 transition duration-300">Admin</button>
+<!-- Header -->
+<header class="w-full bg-black text-white shadow-md p-4 sticky top-0 z-50">
+  <div class="container mx-auto flex justify-between items-center max-w-7xl">
+    <!-- Home Button -->
+    <button id="home-btn" class="flex items-center space-x-2 text-2xl font-bold text-gray-200 cursor-pointer hover:text-red-500 transition-colors duration-200">
+      <img src="wplp.png" alt="WPLP Logo" class="h-8">
+      <span>Will's Precision Layer Prints</span>
+    </button>
 
-                <div id="auth-buttons" class="flex items-center space-x-2">
-                    <button id="login-button" class="bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-red-700 transition duration-300">Sign In</button>
-                </div>
-                <div id="user-profile-menu" class="relative hidden">
-                    <button id="user-profile-button" class="flex items-center space-x-2 bg-gray-700 text-gray-200 rounded-full p-2 hover:bg-gray-600 transition-colors duration-200">
-                        <img id="user-avatar" class="w-8 h-8 rounded-full" src="https://placehold.co/32x32/cccccc/ffffff?text=U" onerror="this.src='https://placehold.co/32x32/cccccc/ffffff?text=U';">
-                        <span id="user-name" class="font-semibold text-sm"></span>
-                    </button>
-                    <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10 hidden">
-                        <a href="#" id="view-orders-link" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">My Orders</a>
-                        <a href="#" id="signout-link" class="block px-4 py-2 text-red-500 hover:bg-gray-100 border-t">Sign Out</a>
-                    </div>
-                </div>
-            </div>
+    <!-- Right Side Buttons -->
+    <div class="flex items-center space-x-4">
+      <!-- Admin Button (hidden until verified) -->
+      <button id="admin-button" class="hidden bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-blue-700 transition duration-300">Admin</button>
+
+      <!-- Cart Button -->
+      <button id="cart-button" class="relative bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-red-700 transition duration-300">
+        Cart
+        <span id="cart-badge" class="absolute -top-2 -right-2 bg-white text-red-600 font-bold text-xs px-2 py-0.5 rounded-full opacity-0">0</span>
+      </button>
+
+      <!-- Auth Buttons -->
+      <div id="auth-buttons" class="flex items-center space-x-2">
+        <button id="login-button" class="bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-red-700 transition duration-300">Sign In</button>
+      </div>
+
+      <!-- User Profile Menu -->
+      <div id="user-profile-menu" class="relative hidden">
+        <button id="user-profile-button" class="flex items-center space-x-2 bg-gray-700 text-gray-200 rounded-full p-2 hover:bg-gray-600 transition-colors duration-200">
+          <img id="user-avatar" class="w-8 h-8 rounded-full" src="https://placehold.co/32x32/cccccc/ffffff?text=U" onerror="this.src='https://placehold.co/32x32/cccccc/ffffff?text=U';">
+          <span id="user-name" class="font-semibold text-sm"></span>
+        </button>
+        <div id="profile-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10 hidden">
+          <a href="#" id="view-orders-link" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">My Orders</a>
+          <a href="#" id="signout-link" class="block px-4 py-2 text-red-500 hover:bg-gray-100 border-t">Sign Out</a>
         </div>
-    </header>
+      </div>
+    </div>
+  </div>
+</header>
+
 
     <!-- Login Modal -->
     <div id="login-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
@@ -1010,6 +1024,10 @@
                     showMessageModal(err.message, false, true);
                 }
             });
+
+	    cartButton.addEventListener('click', () => {
+       	        cartModal.classList.remove('hidden');
+	    });
 
             // Cart and UI listeners
             document.getElementById('close-modal-button')?.addEventListener('click', closeCartModal);
