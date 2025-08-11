@@ -907,8 +907,6 @@
             }
         }
 
-		const provider = new firebase.auth.GoogleAuthProvider();
-
         async function signInWithGoogle() {
 			firebase.auth().signInWithPopup(provider)
 			    .then((result) => {
@@ -1077,5 +1075,6 @@
 
 </body>
 </html>
+
 
 
