@@ -971,14 +971,13 @@
         }
 
 		async function signInWithGoogle() {
-			firebase.auth().signInWithPopup(provider)
-			    .then((result) => {
-      				const user = result.user;
-      				console.log("User signed in:", user.displayName);
-    			})
-    			.catch((error) => {
-      				console.error("Error during sign-in:", error.message);
-    			});
+			signInWithPopup(auth, provider)
+      			.then((result) => {
+        			console.log("Signed in as:", result.user.displayName);
+      			})
+      			.catch((error) => {
+        			console.error("Error:", error);
+      			});
         }
 
         // Event Listeners and initialization
@@ -1072,6 +1071,7 @@
 
 </body>
 </html>
+
 
 
 
