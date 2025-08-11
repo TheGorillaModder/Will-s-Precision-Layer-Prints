@@ -32,6 +32,9 @@
       <!-- Admin Button (hidden until verified) -->
       <button id="admin-button" class="hidden bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-blue-700 transition duration-300">Admin</button>
 
+	  <!-- Info & Policies Button -->
+      <button id="info-policies-button" class="relative bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-red-700 transition duration-300">Info & Policies</button>
+
       <!-- Cart Button -->
       <button id="cart-button" class="relative bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md hover:bg-red-700 transition duration-300">
         Cart
@@ -363,6 +366,7 @@
         const signoutLink = document.getElementById('signout-link');
         const viewOrdersLink = document.getElementById('view-orders-link');
         const adminButton = document.getElementById('admin-button');
+		const infoPoliciesButton = document.getElementById('info-policies-button');
 
         const productsView = document.getElementById('products-view');
         const productsList = document.getElementById('product-list');
@@ -1039,6 +1043,7 @@
             closeMessageModal.addEventListener('click', window.closeMessageModal);
             document.getElementById('acknowledge-button')?.addEventListener('click', window.closeAddToCartModal);
             document.getElementById('cart-items')?.addEventListener('click', handleCartAction);
+			infoPoliciesButton.addEventListener('click', (e) => { window.location.href = '/AboutUs'; })
 
             productSearchInput.addEventListener('input', () => {
                 const searchTerm = productSearchInput.value.toLowerCase();
@@ -1055,7 +1060,7 @@
                 noProductsFoundMessage.classList.toggle('hidden', found);
             });
 
-	    checkoutButton.addEventListener('click', openCheckoutModal);
+	    	checkoutButton.addEventListener('click', openCheckoutModal);
 
             // Admin panel events
             adminButton.addEventListener('click', () => { window.showView('admin-view'); fetchAllOrders(); });
@@ -1071,6 +1076,7 @@
 
 </body>
 </html>
+
 
 
 
