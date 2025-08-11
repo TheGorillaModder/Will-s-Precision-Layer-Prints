@@ -946,10 +946,8 @@
                     userAvatar.src = user.photoURL || 'https://placehold.co/32x32/cccccc/ffffff?text=U';
 
                     // Check if user is admin
-                    const adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'admins', user.uid);
-                    const adminDoc = await getDoc(adminDocRef);
-                    isAdmin = adminDoc.exists();
-                    adminButton.classList.toggle('hidden', !isAdmin);
+		    isAdmin = (user.uid === "1KkomztaPGZZZ46i2uwxhqHRgNZ2");
+		    adminButton.classList.toggle('hidden', !isAdmin);
 
                 } else {
                     userId = null;
@@ -1054,6 +1052,8 @@
                 });
                 noProductsFoundMessage.classList.toggle('hidden', found);
             });
+
+	    checkoutButton.addEventListener('click', openCheckoutModal);
 
             // Admin panel events
             adminButton.addEventListener('click', () => { window.showView('admin-view'); fetchAllOrders(); });
