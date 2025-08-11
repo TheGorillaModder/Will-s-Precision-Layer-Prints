@@ -779,10 +779,12 @@
         function renderAllOrders(orders) {
             allOrdersList.innerHTML = '';
             const searchTerm = orderSearchInput.value.toLowerCase();
-            const filteredOrders = orders.filter(order =>
-                (order.customerName || '').toLowerCase().includes(searchTerm) ||
-                (order.orderId || '').toLowerCase().includes(searchTerm)
-            );
+            const filteredOrders = orders
+		.filter(order => !order.dismissedByAdmin)
+  		.filter(order =>
+    		(order.customerName || '').toLowerCase().includes(searchTerm) ||
+    		(order.orderId || '').toLowerCase().includes(searchTerm)
+  	    );
             if (filteredOrders.length === 0) {
                 allOrdersList.innerHTML = `<p class="text-gray-500 text-center py-4">No orders found.</p>`;
                 return;
@@ -857,9 +859,10 @@
             `;
             document.getElementById('dismiss-order-button').addEventListener('click', async (e) => {
                 const orderId = e.target.dataset.orderId;
-                if (confirm('Are you sure you want to dismiss this order? This will permanently delete it.')) {
-                    try {
-                        await deleteDoc(doc(db, ordersCollection.path, orderId));
+                if (confirm('Are you sure you want to dismiss this order? This will permanently hide it from every admins view.')) {
+                    try {await updateDoc(doc(db, ordersCollection.path, orderId), {
+  			dismissedByAdmin: true
+		    });
                         closeAdminOrderDetailsModal();
                         showMessageModal("Order dismissed successfully.", false, true);
                     } catch (error) {
