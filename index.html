@@ -319,14 +319,14 @@
 
         // Firebase config (keeps local config unless __firebase_config provided)
         let firebaseConfig = {
-	  apiKey: "AIzaSyBZHcWkwB2bff5beuh1J50NI-9WeYvhcIg",
-	  authDomain: "will-s-precision-layer-prints.firebaseapp.com",
-	  projectId: "will-s-precision-layer-prints",
-	  storageBucket: "will-s-precision-layer-prints.firebasestorage.app",
-	  messagingSenderId: "28322806740",
-	  appId: "1:28322806740:web:643d6bd0d857d936f77441",
-  	  measurementId: "G-P96D22GYV5"
-	};
+	  		apiKey: "AIzaSyBZHcWkwB2bff5beuh1J50NI-9WeYvhcIg",
+	  		authDomain: "will-s-precision-layer-prints.firebaseapp.com",
+	  		projectId: "will-s-precision-layer-prints",
+			storageBucket: "will-s-precision-layer-prints.firebasestorage.app",
+		  	messagingSenderId: "28322806740",
+			appId: "1:28322806740:web:643d6bd0d857d936f77441",
+  	  		measurementId: "G-P96D22GYV5"
+		};
         try {
             if (typeof __firebase_config !== 'undefined') {
                 firebaseConfig = JSON.parse(__firebase_config);
@@ -906,19 +906,6 @@
             }
         }
 
-        async function signInWithGoogle() {
-			firebase.auth().signInWithPopup(provider)
-			    .then((result) => {
-      				const user = result.user;
-      				console.log("User signed in:", user.displayName);
-    			})
-    			.catch((error) => {
-      				console.error("Error during sign-in:", error.message);
-    			});
-        }
-
-		document.getElementById("google-signin-button").addEventListener("click", signInWithGoogle);
-
         async function handleSignOut() {
             try {
                 await signOut(auth);
@@ -983,6 +970,17 @@
             noProductsFoundMessage.classList.toggle('hidden', foundProducts);
         }
 
+		async function signInWithGoogle() {
+			firebase.auth().signInWithPopup(provider)
+			    .then((result) => {
+      				const user = result.user;
+      				console.log("User signed in:", user.displayName);
+    			})
+    			.catch((error) => {
+      				console.error("Error during sign-in:", error.message);
+    			});
+        }
+
         // Event Listeners and initialization
         window.onload = function() {
             initializeFirestoreAndAuth();
@@ -990,7 +988,7 @@
             // Login modal controls
             loginButton.addEventListener('click', () => { loginModal.classList.remove('hidden'); });
             closeLoginModal.addEventListener('click', () => { loginModal.classList.add('hidden'); });
-            googleLogin.addEventListener('click', signInWithGoogle);
+			document.getElementById("google-signin-button").addEventListener("click", signInWithGoogle);
 
             emailLoginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -1074,6 +1072,7 @@
 
 </body>
 </html>
+
 
 
 
