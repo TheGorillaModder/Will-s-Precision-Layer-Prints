@@ -65,7 +65,7 @@
             <h2 class="text-2xl font-bold mb-6 text-gray-800">Sign In / Create Account</h2>
             <button id="close-login-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">✖</button>
             <div class="space-y-4">
-                <button id="google-login" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Sign in with Google</button>
+                <button id="google-signin-button" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Sign in with Google</button>
 
                 <div class="flex items-center justify-between">
                     <span class="text-gray-400">or</span>
@@ -907,6 +907,8 @@
             }
         }
 
+		const provider = new firebase.auth.GoogleAuthProvider();
+
         async function signInWithGoogle() {
 			firebase.auth().signInWithPopup(provider)
 			    .then((result) => {
@@ -917,6 +919,8 @@
       				console.error("Error during sign-in:", error.message);
     			});
         }
+
+		document.getElementById("google-signin-button").addEventListener("click", signInWithGoogle);
 
         async function handleSignOut() {
             try {
@@ -1073,4 +1077,5 @@
 
 </body>
 </html>
+
 
