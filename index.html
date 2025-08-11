@@ -1043,7 +1043,7 @@
             closeMessageModal.addEventListener('click', window.closeMessageModal);
             document.getElementById('acknowledge-button')?.addEventListener('click', window.closeAddToCartModal);
             document.getElementById('cart-items')?.addEventListener('click', handleCartAction);
-			infoPoliciesButton.addEventListener('click', (e) => { window.location.href += '/AboutUs'; })
+			infoPoliciesButton.addEventListener('click', (e) => { window.location.href = '/AboutUs'; })
 
             productSearchInput.addEventListener('input', () => {
                 const searchTerm = productSearchInput.value.toLowerCase();
@@ -1076,6 +1076,7 @@
 
 </body>
 </html>
+
 
 
 
