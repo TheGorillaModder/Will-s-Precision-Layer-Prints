@@ -57,11 +57,6 @@
   <p>We’re crafting something amazing. Stay tuned!</p>
   
   <div class="countdown" id="countdown">Launching Soon...</div>
-  
-  <form onsubmit="event.preventDefault(); alert('Thanks for signing up!');">
-    <input type="email" placeholder="Enter your email" required />
-    <button type="submit">Notify Me</button>
-  </form>
 
   <script>
     // Countdown example (set your launch date here)
@@ -73,7 +68,7 @@
       const diff = launchDate - now;
 
       if (diff <= 0) {
-        countdownEl.textContent = "We’re live!";
+        countdownEl.textContent = "We’re launching Will's Precision Layer Prints!";
         return;
       }
 
